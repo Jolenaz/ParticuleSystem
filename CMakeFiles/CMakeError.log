@@ -1,0 +1,116 @@
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_12fda/fast"
+/Library/Developer/CommandLineTools/usr/bin/make -f CMakeFiles/cmTC_12fda.dir/build.make CMakeFiles/cmTC_12fda.dir/build
+Building C object CMakeFiles/cmTC_12fda.dir/CheckSymbolExists.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc    -o CMakeFiles/cmTC_12fda.dir/CheckSymbolExists.c.o   -c /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'CL_VERSION_2_0'
+  return ((int*)(&CL_VERSION_2_0))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_12fda.dir/CheckSymbolExists.c.o] Error 1
+make: *** [cmTC_12fda/fast] Error 2
+
+File /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </System/Library/Frameworks/OpenCL.framework/Headers/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e807f/fast"
+/Library/Developer/CommandLineTools/usr/bin/make -f CMakeFiles/cmTC_e807f.dir/build.make CMakeFiles/cmTC_e807f.dir/build
+Building C object CMakeFiles/cmTC_e807f.dir/CheckSymbolExists.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc    -o CMakeFiles/cmTC_e807f.dir/CheckSymbolExists.c.o   -c /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'CL_VERSION_2_0'
+  return ((int*)(&CL_VERSION_2_0))[argc];
+                  ^
+1 error generated.
+make[2]: *** [CMakeFiles/cmTC_e807f.dir/CheckSymbolExists.c.o] Error 1
+make[1]: *** [cmTC_e807f/fast] Error 2
+
+File /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </System/Library/Frameworks/OpenCL.framework/Headers/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c52da/fast"
+/Library/Developer/CommandLineTools/usr/bin/make -f CMakeFiles/cmTC_c52da.dir/build.make CMakeFiles/cmTC_c52da.dir/build
+Building C object CMakeFiles/cmTC_c52da.dir/CheckSymbolExists.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc    -o CMakeFiles/cmTC_c52da.dir/CheckSymbolExists.c.o   -c /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'CL_VERSION_2_0'
+  return ((int*)(&CL_VERSION_2_0))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_c52da.dir/CheckSymbolExists.c.o] Error 1
+make: *** [cmTC_c52da/fast] Error 2
+
+File /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </System/Library/Frameworks/OpenCL.framework/Headers/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_51027/fast"
+/Library/Developer/CommandLineTools/usr/bin/make -f CMakeFiles/cmTC_51027.dir/build.make CMakeFiles/cmTC_51027.dir/build
+Building C object CMakeFiles/cmTC_51027.dir/CheckSymbolExists.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc    -o CMakeFiles/cmTC_51027.dir/CheckSymbolExists.c.o   -c /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'CL_VERSION_2_0'
+  return ((int*)(&CL_VERSION_2_0))[argc];
+                  ^
+1 error generated.
+make[2]: *** [CMakeFiles/cmTC_51027.dir/CheckSymbolExists.c.o] Error 1
+make[1]: *** [cmTC_51027/fast] Error 2
+
+File /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </System/Library/Frameworks/OpenCL.framework/Headers/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
