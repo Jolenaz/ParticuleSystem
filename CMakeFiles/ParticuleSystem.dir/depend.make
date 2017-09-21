@@ -66,6 +66,7 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o: Classes/Math/V
 CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o: Classes/Transform.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o: include/joMath.hpp
 
+CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Render/Camera.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Render/RenderManager.class.cpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Render/RenderManager.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: /usr/local/Cellar/sdl2/2.0.5/include/SDL2/SDL.h
@@ -117,10 +118,8 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Math/Vec2.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Math/Vec3.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Math/Vec4.class.hpp
-CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Render/Camera.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Transform.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: include/joMath.hpp
-CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: include/render.hpp
 
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o: Classes/Transform.class.cpp
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o: Classes/Transform.class.hpp

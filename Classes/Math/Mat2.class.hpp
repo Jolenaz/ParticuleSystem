@@ -33,7 +33,7 @@ public:
     Mat2(void);
     Mat2(Mat2 const & src);
     Mat2(float m00, float m01, float m10, float m11);
-    virtual ~Mat2(void);
+    ~Mat2(void);
     Mat2 & operator=(Mat2 const & rhs);
 
 

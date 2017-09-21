@@ -22,7 +22,7 @@ public:
     Vec2(void);
     Vec2(Vec2 const & src);
     Vec2(float x, float y);
-    virtual ~Vec2(void);
+    ~Vec2(void);
     Vec2 & operator=(Vec2 const & src);
 
 

@@ -47,7 +47,7 @@ public:
     Mat4(void);
     Mat4(Mat4 const & src);
     Mat4(Mat3 const & src);
-    virtual ~Mat4(void);
+    ~Mat4(void);
     Mat4 & operator=(Mat4 const & rhs);
 
 

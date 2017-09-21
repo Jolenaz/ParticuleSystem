@@ -69,19 +69,19 @@ RenderManager.class.hpp
 /Users/jonas/42/projets/ParticuleSystem/Classes/Render/RenderManager.class.hpp
 
 /Users/jonas/42/projets/ParticuleSystem/Classes/Render/RenderManager.class.hpp
-vector
--
-string
--
-fstream
--
-render.hpp
-/Users/jonas/42/projets/ParticuleSystem/Classes/Render/render.hpp
+Camera.class.hpp
+/Users/jonas/42/projets/ParticuleSystem/Classes/Render/Camera.class.hpp
 SDL.h
 -
 OpenGL/gl3.h
 -
-OpenCL/OpenCL.h
+OpenCL/cl.h
+-
+OpenCL/cl_gl_ext.h
+-
+OpenGL/CGLDevice.h
+-
+OpenGL/CGLCurrent.h
 -
 
 /Users/jonas/42/projets/ParticuleSystem/Classes/Transform.class.cpp
@@ -679,19 +679,19 @@ Transform.class.hpp
 Classes/Render/Transform.class.hpp
 
 Classes/Render/RenderManager.class.hpp
-vector
--
-string
--
-fstream
--
-render.hpp
-Classes/Render/render.hpp
+Camera.class.hpp
+Classes/Render/Camera.class.hpp
 SDL.h
 -
 OpenGL/gl3.h
 -
-OpenCL/OpenCL.h
+OpenCL/cl.h
+-
+OpenCL/cl_gl_ext.h
+-
+OpenGL/CGLDevice.h
+-
+OpenGL/CGLCurrent.h
 -
 
 Classes/Transform.class.hpp

@@ -67,6 +67,7 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o
  Classes/Transform.class.hpp
  include/joMath.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o
+ /Users/jonas/42/projets/ParticuleSystem/Classes/Render/Camera.class.hpp
  /Users/jonas/42/projets/ParticuleSystem/Classes/Render/RenderManager.class.cpp
  /Users/jonas/42/projets/ParticuleSystem/Classes/Render/RenderManager.class.hpp
  /usr/local/Cellar/sdl2/2.0.5/include/SDL2/SDL.h
@@ -118,10 +119,8 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o
  Classes/Math/Vec2.class.hpp
  Classes/Math/Vec3.class.hpp
  Classes/Math/Vec4.class.hpp
- Classes/Render/Camera.class.hpp
  Classes/Transform.class.hpp
  include/joMath.hpp
- include/render.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o
  /Users/jonas/42/projets/ParticuleSystem/Classes/Transform.class.cpp
  /Users/jonas/42/projets/ParticuleSystem/Classes/Transform.class.hpp

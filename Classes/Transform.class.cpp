@@ -61,8 +61,11 @@ Mat4 Transform::get_worldToLocal( void ){
 }
 
 void Transform::_updateMatrix(){
-    this->_worldToLocal.set_identity().scale(this->scale).rotateLocal(this->rotation).translate(this->position);
+    Mat4 ret;
+   // ret.set_identity().translate(this->position);
+    ret.set_identity().translate(this->position).rotateGlobal(this->rotation);
 
-    if (this->parent != NULL)
-        this->_worldToLocal = this->_worldToLocal * this->parent->get_worldToLocal();
+    // if (this->parent != NULL)
+    //     ret = ret * this->parent->get_worldToLocal();
+    this->_worldToLocal = ret;
 }

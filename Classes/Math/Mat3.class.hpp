@@ -37,7 +37,7 @@ public:
 
     Mat3(void);
     Mat3(Mat3 const & src);
-    virtual ~Mat3(void);
+    ~Mat3(void);
     Mat3 & operator=(Mat3 const & rhs);
 
 

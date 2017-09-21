@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/jonas/42/projets/ParticuleSystem/third-party/glad/include -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2 -I/Users/jonas/42/projets/ParticuleSystem/Classes -I/Users/jonas/42/projets/ParticuleSystem/Classes/Math -I/Users/jonas/42/projets/ParticuleSystem/Classes/Render -I/Users/jonas/42/projets/ParticuleSystem/include 
+CXX_INCLUDES = -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2 -I/Users/jonas/42/projets/ParticuleSystem/Classes -I/Users/jonas/42/projets/ParticuleSystem/Classes/Math -I/Users/jonas/42/projets/ParticuleSystem/Classes/Render -I/Users/jonas/42/projets/ParticuleSystem/include 
 
