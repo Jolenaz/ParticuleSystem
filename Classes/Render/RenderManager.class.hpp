@@ -2,6 +2,8 @@
 #pragma once
 #include "Camera.class.hpp"
 #include <SDL.h>
+#include <fstream>
+#include <vector>
 #include <OpenGL/gl3.h> 
 #include <OpenCL/cl.h>
 #include <OpenCL/cl_gl_ext.h>
@@ -10,7 +12,12 @@
 
 class RenderManager{
 
-    //constructor
+    typedef struct shader_info{
+        GLenum	flag;
+        std::string addr;
+    }   t_shader_info;
+
+        //constructor
 
     public:
     RenderManager(float, float);
@@ -26,10 +33,14 @@ class RenderManager{
     Camera cam;
     void _initSDL(int width, int height);
     void _initGLCL();
+    void getClProgram();
+    void getGlProgram();
     SDL_Window      *window;
     SDL_GLContext   glContext;
     cl_context      clContext;
+    cl_device_id    clDevice;
     int             glProgramId;
+    cl_kernel       clKernel;
     
 
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "joMAth.hpp"
+#include "joMath.hpp"
 
 typedef struct s_vertex{
     Vec3 pos;
