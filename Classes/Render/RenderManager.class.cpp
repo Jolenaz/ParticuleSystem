@@ -2,10 +2,18 @@
 #include "RenderManager.class.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
+void GL_DUMP_ERROR(std::string message){
+    int glErrorCode = 0;
+    if ((glErrorCode = glGetError()) != GL_NO_ERROR)
+        std::cout << message << " (error code: " << glErrorCode << ")\n";
+}
+
 RenderManager::RenderManager(float w, float h){
-    cam.ratio = (float)w / (float)h;
+    //cam.ratio = (float)w / (float)h;
     this->_initSDL(w,h);
-    this->_initGLCL();
+	this->_initGLCL();
+	//this->getGlProgram();
+	//this->draw();
 }
 
 RenderManager::~RenderManager(void){}
@@ -30,12 +38,12 @@ void RenderManager::_initSDL(int width, int height){
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 			this->glContext = SDL_GL_CreateContext(this->window);
 			if(this->glContext == NULL) {
 				std::cout << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << std::endl;
 			}
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
+			//glEnable(GL_DEBUG_OUTPUT);
 		}
 	}
 }
@@ -85,6 +93,7 @@ void RenderManager::getClProgram(){
 
 void RenderManager::getGlProgram(){
 	int ret = glCreateProgram();
+	GL_DUMP_ERROR("test");
 	std::vector<t_shader_info> shaders = {
 		{ GL_VERTEX_SHADER, "Shaders/general.vert" },
 		{ GL_FRAGMENT_SHADER, "Shaders/general.frag" }
@@ -96,7 +105,8 @@ void RenderManager::getGlProgram(){
         std::string source_code;
 
         std::fstream shaderfd(si.addr);
-        int shader_id = glCreateShader(si.flag);
+		int shader_id = glCreateShader(si.flag);
+		GL_DUMP_ERROR("test");
         int compilation_return;
         
         if (shaderfd)
@@ -108,9 +118,12 @@ void RenderManager::getGlProgram(){
         else
             std::cout << "shader introuvable : " << si.addr << std::endl;
         const char *source_char = source_code.c_str();
-        glShaderSource(shader_id, 1, &source_char, NULL);
-        glCompileShader(shader_id);
-        glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compilation_return);
+		glShaderSource(shader_id, 1, &source_char, NULL);
+		GL_DUMP_ERROR("test");
+		glCompileShader(shader_id);
+		GL_DUMP_ERROR("test");
+		glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compilation_return);
+		GL_DUMP_ERROR("test");
         if (compilation_return == 0)
         {
             GLchar buf[10000];
@@ -118,12 +131,44 @@ void RenderManager::getGlProgram(){
 	        glGetShaderInfoLog(shader_id, 10000, &compilation_return, buf);
 	        std::cout << buf << std::endl;
         }
-        glAttachShader(ret, shader_id);
+		glAttachShader(ret, shader_id);
+		GL_DUMP_ERROR("test");
     }
-    glLinkProgram(ret);
+	glLinkProgram(ret);
+	GL_DUMP_ERROR("test");
     this->glProgramId = ret;
 }
 
+void RenderManager::draw(GLuint vbo){
+
+	struct vertex
+	{
+	  float x, y, z, w; // position
+	
+	}pos[3];
+
+	glUseProgram(this->glProgramId);
+	GL_DUMP_ERROR("test");
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_DUMP_ERROR("test");
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	GL_DUMP_ERROR("test");
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	GL_DUMP_ERROR("test");
+	glBindVertexArray(vao);
+	GL_DUMP_ERROR("test");
+	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(0));
+	GL_DUMP_ERROR("test");
+	glEnableVertexAttribArray(0);
+	GL_DUMP_ERROR("test");
+	glDrawArrays(GL_POINTS,0,3);
+	GL_DUMP_ERROR("test");
+	SDL_GL_SwapWindow(this->window);
+	
+
+}
 
 void RenderManager::_initGLCL(){
 	
@@ -148,7 +193,10 @@ void RenderManager::_initGLCL(){
 
 	struct vertex
 	{
-	  float x, y, z, w; // position
+	  float x = 0.0f;
+	  float y = 0.0f;
+	  float z = 0.0f;
+	  float w = 0.0f;
 	
 	}pos[3];
 
@@ -182,20 +230,38 @@ void RenderManager::_initGLCL(){
 	cl_int ret;
 
 	cl_command_queue cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &ret);
+	std::cout << "create command queue " << ret << std::endl;
 
 	
 	cl_mem vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE,vbo,NULL);
 	
+
+
 	/* Set OpenCL Kernel Parameters */
 	ret = clSetKernelArg(this->clKernel, 0,sizeof(cl_mem), (void *)&vbo_cl); //,
 	
+	std::cout << "set kernel arg " << ret << std::endl;
+
+
 	glFlush(); 
 	ret = clEnqueueAcquireGLObjects(cmd_queue, 1, &vbo_cl, 0,0,0);
+
+	std::cout << "enqueue object " << ret << std::endl;
 	
 	/* Execute OpenCL Kernel */
-	ret = clEnqueueNDRangeKernel(cmd_queue, this->clKernel, 1, NULL,NULL, NULL, 0, NULL, NULL);
 	
+	const size_t global_item_size = 1;
+	const size_t local_item_size = 1;
+
+	ret = clEnqueueNDRangeKernel(cmd_queue, this->clKernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
+	
+	std::cout << "enqueue kernel " << ret << std::endl;
+
 	ret = clEnqueueReleaseGLObjects(cmd_queue, 1, &vbo_cl, 0,0,0);
+
+	std::cout << "enqueu release " << ret << std::endl;
 	clFinish(cmd_queue);
+
+	this->draw(vbo);
 	
 	}

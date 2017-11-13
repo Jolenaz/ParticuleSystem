@@ -31,10 +31,11 @@ class RenderManager{
     public:
 
     Camera cam;
-    void _initSDL(int width, int height);
-    void _initGLCL();
-    void getClProgram();
-    void getGlProgram();
+    void            _initSDL(int width, int height);
+    void            _initGLCL();
+    void            getClProgram();
+    void            getGlProgram();
+    void            draw(GLuint);
     SDL_Window      *window;
     SDL_GLContext   glContext;
     cl_context      clContext;

@@ -1,6 +1,8 @@
 #include "particule.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
+
+
 int main_loop(RenderManager & rManager){
         SDL_Event		ev;
         SDL_PumpEvents();
