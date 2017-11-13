@@ -2,6 +2,8 @@
 #include "RenderManager.class.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
+#define NB_POINT 40000000
+
 void GL_DUMP_ERROR(std::string message){
     int glErrorCode = 0;
     if ((glErrorCode = glGetError()) != GL_NO_ERROR)
@@ -144,8 +146,8 @@ void RenderManager::draw(GLuint vbo){
 	struct vertex
 	{
 	  float x, y, z, w; // position
-	
-	}pos[3];
+	  float xv, yv, zv, wv;
+	};
 
 	glUseProgram(this->glProgramId);
 	GL_DUMP_ERROR("test");
@@ -159,11 +161,11 @@ void RenderManager::draw(GLuint vbo){
 	GL_DUMP_ERROR("test");
 	glBindVertexArray(vao);
 	GL_DUMP_ERROR("test");
-	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(0));
-	GL_DUMP_ERROR("test");
+	glVertexAttribPointer(0,8, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(0));
+	GL_DUMP_ERROR("test alloc memoir");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("test");
-	glDrawArrays(GL_POINTS,0,3);
+	glDrawArrays(GL_POINTS,0,NB_POINT);
 	GL_DUMP_ERROR("test");
 	SDL_GL_SwapWindow(this->window);
 	
@@ -197,14 +199,18 @@ void RenderManager::_initGLCL(){
 	  float y = 0.0f;
 	  float z = 0.0f;
 	  float w = 0.0f;
+	  float xv = 0.0f;
+	  float yv = 0.0f;
+	  float zv = 0.0f;
+	  float wv = 0.0f;
 	
-	}pos[3];
+	};
 
 	GLuint vbo;
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER,3*sizeof(vertex),pos,GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, NB_POINT * sizeof(vertex),NULL,GL_DYNAMIC_DRAW);
 
 	CGLContextObj    gl_ctx        = CGLGetCurrentContext();
 	CGLShareGroupObj gl_sharegroup = CGLGetShareGroup(gl_ctx);
@@ -233,8 +239,9 @@ void RenderManager::_initGLCL(){
 	std::cout << "create command queue " << ret << std::endl;
 
 	
-	cl_mem vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE,vbo,NULL);
+	cl_mem vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,vbo,&ret);
 	
+	std::cout << "cll mem allocation " << ret << std::endl;
 
 
 	/* Set OpenCL Kernel Parameters */
@@ -250,10 +257,10 @@ void RenderManager::_initGLCL(){
 	
 	/* Execute OpenCL Kernel */
 	
-	const size_t global_item_size = 1;
+	const size_t global_item_size = NB_POINT;
 	const size_t local_item_size = 1;
 
-	ret = clEnqueueNDRangeKernel(cmd_queue, this->clKernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
+	ret = clEnqueueNDRangeKernel(cmd_queue, this->clKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
 	
 	std::cout << "enqueue kernel " << ret << std::endl;
 
