@@ -63,7 +63,6 @@ public:
     Mat4    operator-(Mat4 const & rhs) const;
     void    operator-=(Mat4 const & rhs);
     Mat4    operator*(Mat4 const & rhs) const;
-    void    operator*=(Mat4 const & rhs);
     Mat4    operator*(float const & rhs) const;
     void    operator*=(float const & rhs);
     Vec4    operator*(Vec4 rhs);
@@ -81,6 +80,13 @@ public:
     Mat4    & rotateGlobal(Vec3 const & angles);
     Mat4    & translate(Vec3 const & trans);
     Mat4    & scale(Vec3 const & scale);
+
+    Mat4    & rotateAroundInverse(Vec4 const & rotation); 
+    Mat4    & rotateAroundInverse(Vec3 const & axe, float const & angle);
+    Mat4    & rotateLocalInverse(Vec3 const & angles);
+    Mat4    & rotateGlobalInverse(Vec3 const & angles);
+    Mat4    & translateInverse(Vec3 const & trans);
+    Mat4    & scaleInverse(Vec3 const & scale);
 
 // fonctions non membres
 

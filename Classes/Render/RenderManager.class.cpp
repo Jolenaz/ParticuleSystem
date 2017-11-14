@@ -2,16 +2,17 @@
 #include "RenderManager.class.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
-#define NB_POINT 40000000
-
 void GL_DUMP_ERROR(std::string message){
     int glErrorCode = 0;
     if ((glErrorCode = glGetError()) != GL_NO_ERROR)
         std::cout << message << " (error code: " << glErrorCode << ")\n";
 }
 
-RenderManager::RenderManager(float w, float h){
-    this->cam.ratio = (float)w / (float)h;
+RenderManager::RenderManager(float w, float h, uint caracSize){
+	this->cam.ratio = (float)w / (float)h;
+	this->caracSize = caracSize;
+	this->fullSize =  caracSize * caracSize * caracSize;
+	std::cout << this->fullSize << std::endl;
 	this->_initSDL(w,h);
 	this->_initGLCL();
 	this->getClProgram();
@@ -146,6 +147,9 @@ void RenderManager::draw(){
 
 	glUseProgram(this->glProgramId);
 	GL_DUMP_ERROR("glUseProgram : ");
+	Mat4 VP =  this->cam.get_projMat() * this->cam.transform.get_localToWorld();
+	glUniformMatrix4fv(glGetUniformLocation(this->glProgramId, "VP"), 1, GL_TRUE, (const GLfloat*)&VP.value);
+	GL_DUMP_ERROR("glUniformMatrix4fv : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_DUMP_ERROR("glClear : ");
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -160,7 +164,7 @@ void RenderManager::draw(){
 	GL_DUMP_ERROR("glVertexAttribPointer : ");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
-	glDrawArrays(GL_POINTS,0,NB_POINT);
+	glDrawArrays(GL_POINTS,0,this->fullSize);
 	GL_DUMP_ERROR("glDrawArrays : ");
 	SDL_GL_SwapWindow(this->window);
 }
@@ -188,7 +192,7 @@ void RenderManager::_initGLCL(){
 
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	glBufferData(GL_ARRAY_BUFFER, NB_POINT * sizeof(Vertex),NULL,GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->fullSize * sizeof(Vertex),NULL,GL_DYNAMIC_DRAW);
 
 	CGLContextObj    gl_ctx        = CGLGetCurrentContext();
 	CGLShareGroupObj gl_sharegroup = CGLGetShareGroup(gl_ctx);
@@ -198,7 +202,7 @@ void RenderManager::_initGLCL(){
 			(cl_context_properties) gl_sharegroup,
 			0
 	};
-	
+
 	cl_int err_code;
 	this->clContext = clCreateContext(  properties,
 									1,
@@ -219,15 +223,17 @@ void RenderManager::initParticule(){
 
 	cl_int err_code;
 
-	err_code = clSetKernelArg(this->initKernel, 0,sizeof(cl_mem), (void *)&this->vbo_cl);
-	if (err_code != 0){std::cout << "set kernel arg " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->initKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
+	if (err_code != 0){std::cout << "set kernel arg0 " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->initKernel, 1, sizeof(uint), (void *)&this->caracSize);
+	if (err_code != 0){std::cout << "set kernel arg1 " << err_code << std::endl;}
 	
 	glFlush(); 
 
 	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueue object " << err_code << std::endl;}
 
-	const size_t global_item_size = NB_POINT;
+	const size_t global_item_size = this->fullSize;
 
 	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->initKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
 	if (err_code != 0){std::cout << "enqueue kernel " << err_code << std::endl;}

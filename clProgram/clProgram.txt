@@ -1,6 +1,11 @@
-__kernel void drawPoints(__global float4* buffer) 
+__kernel void drawPoints(__global float4* buffer, uint caracSize) 
 {
-    buffer[0] = (float4)(0, 0.5, -1, 1.0f);
-    buffer[2] = (float4)(-0.5, -0.5, -1, 1.0f);
-    buffer[4] = (float4)(0.5, -0.5, -1, 1.0f);
+    float4 ret;
+    uint index = get_global_id(0);
+    uint tmp = caracSize * caracSize;
+    ret.s2 = (float)(index / tmp) / caracSize;
+    ret.s0 = (float)((index % tmp) / caracSize) / caracSize;
+    ret.s1 = (float)((index % tmp) % caracSize) / caracSize;
+    ret.s3 = 1.0f;
+    buffer[index] = ret;
 }

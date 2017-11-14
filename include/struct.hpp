@@ -3,5 +3,5 @@
 
 typedef struct s_vertex{
     Vec4 pos;
-    Vec4 speed;
+//    Vec4 speed;
 }   Vertex;

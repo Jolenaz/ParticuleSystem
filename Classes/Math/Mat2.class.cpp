@@ -219,7 +219,7 @@ Mat2 & Mat2::transpos()
 
     for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; i < 2; j++)
+        for (int j = 0; j < 2; j++)
         {
             this->value.mc[i][j] = tmp.value.mc[j][i];
         }

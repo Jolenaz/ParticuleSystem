@@ -32,6 +32,7 @@ class Camera{
 
     Mat4 get_projMat( void );
     Transform transform;
+    void translateCam(Vec3 trans);
 
     // attribus
     private:
@@ -39,6 +40,7 @@ class Camera{
     Mat4 _projMat;
 
     void _calcProjection();
+
 
     // fonctions membres
 

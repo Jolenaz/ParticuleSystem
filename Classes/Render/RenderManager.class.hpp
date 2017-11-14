@@ -21,7 +21,7 @@ class RenderManager{
         //constructor
 
     public:
-    RenderManager(float, float);
+    RenderManager(float, float, uint);
     virtual ~RenderManager(void);
 
     private:
@@ -29,8 +29,10 @@ class RenderManager{
     RenderManager(RenderManager const &);
     RenderManager & operator=(RenderManager const &);
     
-    public:
-
+    
+public:
+    
+    int debug;
     Camera cam;
     void            _initSDL(int width, int height);
     void            _initGLCL();
@@ -50,5 +52,7 @@ class RenderManager{
     int             glProgramId;
     cl_kernel       initKernel;
     
+    uint            caracSize;
+    uint            fullSize;
 
 };
