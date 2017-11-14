@@ -1,6 +1,7 @@
 
 #pragma once
 #include "Camera.class.hpp"
+#include "struct.hpp"
 #include <SDL.h>
 #include <fstream>
 #include <vector>
@@ -35,13 +36,19 @@ class RenderManager{
     void            _initGLCL();
     void            getClProgram();
     void            getGlProgram();
-    void            draw(GLuint);
+
+    void            initParticule();
+
+    void            draw();
     SDL_Window      *window;
+    GLuint          vbo;
+    cl_mem          vbo_cl;
+    cl_command_queue cmd_queue;
     SDL_GLContext   glContext;
     cl_context      clContext;
     cl_device_id    clDevice;
     int             glProgramId;
-    cl_kernel       clKernel;
+    cl_kernel       initKernel;
     
 
 };

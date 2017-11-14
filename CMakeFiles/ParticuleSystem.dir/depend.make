@@ -121,6 +121,7 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Math/Vec4.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: Classes/Transform.class.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: include/joMath.hpp
+CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o: include/struct.hpp
 
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o: Classes/Transform.class.cpp
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o: Classes/Transform.class.hpp

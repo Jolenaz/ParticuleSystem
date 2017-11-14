@@ -11,10 +11,12 @@ void GL_DUMP_ERROR(std::string message){
 }
 
 RenderManager::RenderManager(float w, float h){
-    //cam.ratio = (float)w / (float)h;
-    this->_initSDL(w,h);
+    this->cam.ratio = (float)w / (float)h;
+	this->_initSDL(w,h);
 	this->_initGLCL();
-	//this->getGlProgram();
+	this->getClProgram();
+	this->getGlProgram();
+	this->initParticule();
 	//this->draw();
 }
 
@@ -74,12 +76,11 @@ void RenderManager::getClProgram(){
 		&ptrSourc,
 		nullptr,
 		&err_code);
-
-	std::cout << "error create cl progran : " << err_code  << " for prog : " << prog << std::endl;
+	if (err_code != 0){std::cout << "error create cl progran : " << err_code  << " for prog : " << prog << std::endl;}
 	
 	cl_int ret = clBuildProgram(prog, 1, &this->clDevice, NULL, NULL, NULL);
 	
-	std::cout << "error compilation cl program : " << ret << std::endl;
+	if (ret != 0){std::cout << "error compilation cl program : " << ret << std::endl;}
 
 	if (ret != 0){
 		size_t len = 0;
@@ -90,12 +91,12 @@ void RenderManager::getClProgram(){
 		std::cout << "failed" <<  buffer << std::endl;
 	}
 
-	this->clKernel = clCreateKernel(prog, "drawPoints", &ret);
+	this->initKernel = clCreateKernel(prog, "drawPoints", &ret);
 }
 
 void RenderManager::getGlProgram(){
 	int ret = glCreateProgram();
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glCreateProgram : ");
 	std::vector<t_shader_info> shaders = {
 		{ GL_VERTEX_SHADER, "Shaders/general.vert" },
 		{ GL_FRAGMENT_SHADER, "Shaders/general.frag" }
@@ -108,7 +109,7 @@ void RenderManager::getGlProgram(){
 
         std::fstream shaderfd(si.addr);
 		int shader_id = glCreateShader(si.flag);
-		GL_DUMP_ERROR("test");
+		GL_DUMP_ERROR("glCreateShader : ");
         int compilation_return;
         
         if (shaderfd)
@@ -121,11 +122,11 @@ void RenderManager::getGlProgram(){
             std::cout << "shader introuvable : " << si.addr << std::endl;
         const char *source_char = source_code.c_str();
 		glShaderSource(shader_id, 1, &source_char, NULL);
-		GL_DUMP_ERROR("test");
+		GL_DUMP_ERROR("glShaderSource : ");
 		glCompileShader(shader_id);
-		GL_DUMP_ERROR("test");
+		GL_DUMP_ERROR("glCompileShader : ");
 		glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compilation_return);
-		GL_DUMP_ERROR("test");
+		GL_DUMP_ERROR("glGetShaderiv : ");
         if (compilation_return == 0)
         {
             GLchar buf[10000];
@@ -134,42 +135,34 @@ void RenderManager::getGlProgram(){
 	        std::cout << buf << std::endl;
         }
 		glAttachShader(ret, shader_id);
-		GL_DUMP_ERROR("test");
+		GL_DUMP_ERROR("glAttachShader");
     }
 	glLinkProgram(ret);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glLinkProgram : ");
     this->glProgramId = ret;
 }
 
-void RenderManager::draw(GLuint vbo){
-
-	struct vertex
-	{
-	  float x, y, z, w; // position
-	  float xv, yv, zv, wv;
-	};
+void RenderManager::draw(){
 
 	glUseProgram(this->glProgramId);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glUseProgram : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	GL_DUMP_ERROR("test");
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glClear : ");
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	GL_DUMP_ERROR("glBindBuffer : ");
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glGenVertexArrays : ");
 	glBindVertexArray(vao);
-	GL_DUMP_ERROR("test");
-	glVertexAttribPointer(0,8, GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(0));
-	GL_DUMP_ERROR("test alloc memoir");
+	GL_DUMP_ERROR("glBindVertexArray : ");
+	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(0));
+	GL_DUMP_ERROR("glVertexAttribPointer : ");
 	glEnableVertexAttribArray(0);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
 	glDrawArrays(GL_POINTS,0,NB_POINT);
-	GL_DUMP_ERROR("test");
+	GL_DUMP_ERROR("glDrawArrays : ");
 	SDL_GL_SwapWindow(this->window);
-	
-
 }
 
 void RenderManager::_initGLCL(){
@@ -193,24 +186,9 @@ void RenderManager::_initGLCL(){
 	
 	this->clDevice = devices[0];
 
-	struct vertex
-	{
-	  float x = 0.0f;
-	  float y = 0.0f;
-	  float z = 0.0f;
-	  float w = 0.0f;
-	  float xv = 0.0f;
-	  float yv = 0.0f;
-	  float zv = 0.0f;
-	  float wv = 0.0f;
-	
-	};
-
-	GLuint vbo;
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, NB_POINT * sizeof(vertex),NULL,GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &this->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	glBufferData(GL_ARRAY_BUFFER, NB_POINT * sizeof(Vertex),NULL,GL_DYNAMIC_DRAW);
 
 	CGLContextObj    gl_ctx        = CGLGetCurrentContext();
 	CGLShareGroupObj gl_sharegroup = CGLGetShareGroup(gl_ctx);
@@ -228,47 +206,34 @@ void RenderManager::_initGLCL(){
 									nullptr,
 									nullptr,
 									&err_code);
-	std::cout << "error create cl context : " << err_code  << " for context : " << this->clContext << std::endl;
+	if (err_code != 0) {std::cout << "error create cl context : " << err_code  << " for context : " << this->clContext << std::endl;}
 
-	this->getClProgram();
-	this->getGlProgram();
+	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
+	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
 
-	cl_int ret;
+	this->vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,this->vbo,&err_code);
+	if (err_code != 0){std::cout << "cll mem allocation " << err_code << std::endl;}
+}
 
-	cl_command_queue cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &ret);
-	std::cout << "create command queue " << ret << std::endl;
+void RenderManager::initParticule(){
 
+	cl_int err_code;
+
+	err_code = clSetKernelArg(this->initKernel, 0,sizeof(cl_mem), (void *)&this->vbo_cl);
+	if (err_code != 0){std::cout << "set kernel arg " << err_code << std::endl;}
 	
-	cl_mem vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,vbo,&ret);
-	
-	std::cout << "cll mem allocation " << ret << std::endl;
-
-
-	/* Set OpenCL Kernel Parameters */
-	ret = clSetKernelArg(this->clKernel, 0,sizeof(cl_mem), (void *)&vbo_cl); //,
-	
-	std::cout << "set kernel arg " << ret << std::endl;
-
-
 	glFlush(); 
-	ret = clEnqueueAcquireGLObjects(cmd_queue, 1, &vbo_cl, 0,0,0);
 
-	std::cout << "enqueue object " << ret << std::endl;
-	
-	/* Execute OpenCL Kernel */
-	
+	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	if (err_code != 0){std::cout << "enqueue object " << err_code << std::endl;}
+
 	const size_t global_item_size = NB_POINT;
-	const size_t local_item_size = 1;
 
-	ret = clEnqueueNDRangeKernel(cmd_queue, this->clKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
-	
-	std::cout << "enqueue kernel " << ret << std::endl;
+	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->initKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
+	if (err_code != 0){std::cout << "enqueue kernel " << err_code << std::endl;}
 
-	ret = clEnqueueReleaseGLObjects(cmd_queue, 1, &vbo_cl, 0,0,0);
+	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	if (err_code != 0){std::cout << "enqueu release " << err_code << std::endl;}
 
-	std::cout << "enqueu release " << ret << std::endl;
 	clFinish(cmd_queue);
-
-	this->draw(vbo);
-	
-	}
+}

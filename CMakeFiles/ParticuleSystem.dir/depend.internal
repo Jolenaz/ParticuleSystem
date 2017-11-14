@@ -122,6 +122,7 @@ CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o
  Classes/Math/Vec4.class.hpp
  Classes/Transform.class.hpp
  include/joMath.hpp
+ include/struct.hpp
 CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o
  /Users/jbelless/ParticuleSystem/Classes/Transform.class.cpp
  /Users/jbelless/ParticuleSystem/Classes/Transform.class.hpp

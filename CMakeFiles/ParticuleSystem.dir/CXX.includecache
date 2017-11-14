@@ -647,6 +647,8 @@ RenderManager.class.hpp
 /Users/jbelless/ParticuleSystem/Classes/Render/RenderManager.class.hpp
 Camera.class.hpp
 /Users/jbelless/ParticuleSystem/Classes/Render/Camera.class.hpp
+struct.hpp
+/Users/jbelless/ParticuleSystem/Classes/Render/struct.hpp
 SDL.h
 -
 fstream
@@ -709,6 +711,8 @@ Classes/Render/Transform.class.hpp
 Classes/Render/RenderManager.class.hpp
 Camera.class.hpp
 Classes/Render/Camera.class.hpp
+struct.hpp
+Classes/Render/struct.hpp
 SDL.h
 -
 fstream
