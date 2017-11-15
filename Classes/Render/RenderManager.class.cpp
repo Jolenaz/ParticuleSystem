@@ -10,15 +10,17 @@ void GL_DUMP_ERROR(std::string message){
 
 RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->cam.ratio = (float)w / (float)h;
+	this->cam.transform.translate(Vec3(0.0,2.0,20.0));
 	this->caracSize = caracSize;
 	this->fullSize =  caracSize * caracSize * caracSize;
+	this->center = Vec3(0.0f, 0.0f, 0.0f);
+	this->delta = 1.0f / 60.0f;
 	std::cout << this->fullSize << std::endl;
 	this->_initSDL(w,h);
 	this->_initGLCL();
 	this->getClProgram();
 	this->getGlProgram();
 	this->initParticule();
-	//this->draw();
 }
 
 RenderManager::~RenderManager(void){}
@@ -92,7 +94,10 @@ void RenderManager::getClProgram(){
 		std::cout << "failed" <<  buffer << std::endl;
 	}
 
-	this->initKernel = clCreateKernel(prog, "drawPoints", &ret);
+	this->initKernel = clCreateKernel(prog, "initPoints", &ret);
+	if (ret != 0){std::cout << "error compilation cl program : " << ret << std::endl;}
+	this->updateKernel = clCreateKernel(prog, "updatePoints", &ret);
+	if (ret != 0){std::cout << "error compilation cl program : " << ret << std::endl;}
 }
 
 void RenderManager::getGlProgram(){
@@ -212,9 +217,6 @@ void RenderManager::_initGLCL(){
 									&err_code);
 	if (err_code != 0) {std::cout << "error create cl context : " << err_code  << " for context : " << this->clContext << std::endl;}
 
-	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
-	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
-
 	this->vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,this->vbo,&err_code);
 	if (err_code != 0){std::cout << "cll mem allocation " << err_code << std::endl;}
 }
@@ -223,23 +225,56 @@ void RenderManager::initParticule(){
 
 	cl_int err_code;
 
-	err_code = clSetKernelArg(this->initKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
-	if (err_code != 0){std::cout << "set kernel arg0 " << err_code << std::endl;}
-	err_code = clSetKernelArg(this->initKernel, 1, sizeof(uint), (void *)&this->caracSize);
-	if (err_code != 0){std::cout << "set kernel arg1 " << err_code << std::endl;}
-	
-	glFlush(); 
+	glFinish(); 
+
+	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
+	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
 
 	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueue object " << err_code << std::endl;}
+
+	err_code = clSetKernelArg(this->initKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
+	if (err_code != 0){std::cout << "set kernel arg0 init " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->initKernel, 1, sizeof(uint), (void *)&this->caracSize);
+	if (err_code != 0){std::cout << "set kernel arg1 init " << err_code << std::endl;}
 
 	const size_t global_item_size = this->fullSize;
 
 	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->initKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
 	if (err_code != 0){std::cout << "enqueue kernel " << err_code << std::endl;}
 
+
 	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueu release " << err_code << std::endl;}
+
+	clFinish(cmd_queue);
+}
+
+void RenderManager::update(){
+
+	cl_int err_code;
+
+	glFinish(); 
+
+	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	if (err_code != 0){std::cout << "enqueue object in update " << err_code << std::endl;}
+
+	err_code = clSetKernelArg(this->updateKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
+	if (err_code != 0){std::cout << "set kernel arg0 update " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->updateKernel, 1, sizeof(float), (void *)&this->delta);
+	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->updateKernel, 2, sizeof(Vec3), (void *)&this->center);
+	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
+
+	const size_t global_item_size = this->fullSize;
+
+	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->updateKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
+	if (err_code != 0){
+		std::cout << "enqueue kernel in update " << err_code << std::endl;
+		exit(0);}
+
+	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	if (err_code != 0){std::cout << "enqueu release in update " << err_code << std::endl;}
 
 	clFinish(cmd_queue);
 }

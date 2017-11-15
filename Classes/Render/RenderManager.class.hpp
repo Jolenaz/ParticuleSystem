@@ -40,7 +40,7 @@ public:
     void            getGlProgram();
 
     void            initParticule();
-
+    void            update();
     void            draw();
     SDL_Window      *window;
     GLuint          vbo;
@@ -51,8 +51,12 @@ public:
     cl_device_id    clDevice;
     int             glProgramId;
     cl_kernel       initKernel;
+    cl_kernel       updateKernel;
     
     uint            caracSize;
     uint            fullSize;
+
+    float           delta;
+    Vec3            center;
 
 };

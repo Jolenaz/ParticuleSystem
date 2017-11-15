@@ -9,6 +9,7 @@
         "stdexcept": "cpp",
         "typeinfo": "cpp",
         "ios": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "bitset": "cpp"
     }
 }

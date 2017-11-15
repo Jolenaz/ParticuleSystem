@@ -1,11 +1,42 @@
-__kernel void drawPoints(__global float4* buffer, uint caracSize) 
+__kernel void initPoints(__global float8* buffer, uint caracSize) 
 {
-    float4 ret;
+    float8 ret;
     uint index = get_global_id(0);
+
     uint tmp = caracSize * caracSize;
-    ret.s2 = (float)(index / tmp) / caracSize;
-    ret.s0 = (float)((index % tmp) / caracSize) / caracSize;
-    ret.s1 = (float)((index % tmp) % caracSize) / caracSize;
+    ret.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
+    ret.s0 = (float)((index % tmp) / caracSize) / caracSize * 10.0f - 5.0f;
+    ret.s1 = (float)((index % tmp) % caracSize) / caracSize * 10.0f - 5.0f;
     ret.s3 = 1.0f;
+    ret.s4 = 0.0f;
+    ret.s5 = 0.0f;
+    ret.s6 = 0.0f;
+    ret.s7 = 0.0f;
     buffer[index] = ret;
 }
+
+float magnitude32(float3 vector){
+    float3 tmp = vector * vector;
+    float po = -1 / 2.0f;
+    return pow(tmp.s0+tmp.s1+tmp.s2, po);
+}
+
+__kernel void updatePoints(__global float8* buffer, float delta, float3 centre) 
+{
+    //uint index = get_global_id(0);
+    //float8 nData = buffer[index];
+    //float3 nPos = (nData.s0, nData.s1, nData.s2);
+    //float3 nSpeed = (nData.s4, nData.s5, nData.s6);
+    //float3 acc = centre - nPos;
+    //acc = acc * magnitude32(acc);
+    //nPos = nPos + nSpeed * delta;
+    //nSpeed = nSpeed + acc * delta;
+    //nData.s0 = nPos.s0;
+    //nData.s1 = nPos.s1;
+    //nData.s2 = nPos.s2;
+    //nData.s4 = nSpeed.s0;
+    //nData.s5 = nSpeed.s1;
+    //nData.s6 = nSpeed.s2;
+    //buffer[index] = nData;
+}
+

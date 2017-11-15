@@ -1,7 +1,7 @@
 #include "particule.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
-#define NB_POINT 1000
+#define NB_POINT 10000
 
 int main_loop(RenderManager & rManager){
         SDL_Event		ev;
@@ -40,6 +40,10 @@ int main_loop(RenderManager & rManager){
                 if (ev.key.keysym.sym == SDLK_RIGHT){
                         rManager.cam.transform.rotate(Vec3(0,-1,0));
                         rManager.debug = 1;}
+                if (ev.key.keysym.sym == SDLK_t){
+                        rManager.center = Vec3(20.0f, 20.0f, 20.0f);
+                        std::cout << rManager.center << std::endl;
+                        rManager.debug = 1;}
         }
         return (1);
 }
@@ -50,6 +54,7 @@ int main()
         RenderManager rManager(1024,768,p);
         while(main_loop(rManager))
         {
+                rManager.update();
                 rManager.draw();
         }
         return (0);
