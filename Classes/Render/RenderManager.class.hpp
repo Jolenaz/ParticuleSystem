@@ -32,6 +32,8 @@ class RenderManager{
     
 public:
     
+    void            showFPS(float FPS, int frameIndex );
+
     int debug;
     Camera cam;
     void            _initSDL(int width, int height);
@@ -57,6 +59,6 @@ public:
     uint            fullSize;
 
     float           delta;
-    Vec3            center;
+    float            center[3];
 
 };

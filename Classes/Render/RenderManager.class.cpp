@@ -13,7 +13,10 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->cam.transform.translate(Vec3(0.0,2.0,20.0));
 	this->caracSize = caracSize;
 	this->fullSize =  caracSize * caracSize * caracSize;
-	this->center = Vec3(0.0f, 0.0f, 0.0f);
+	this->center[0] = 0.0f;
+	this->center[1] = 0.0f;
+	this->center[2] = 0.0f;
+	//this->center[3] = 1.0f;
 	this->delta = 1.0f / 60.0f;
 	std::cout << this->fullSize << std::endl;
 	this->_initSDL(w,h);
@@ -47,6 +50,7 @@ void RenderManager::_initSDL(int width, int height){
 			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 			this->glContext = SDL_GL_CreateContext(this->window);
+			SDL_GL_SetSwapInterval(0);
 			if(this->glContext == NULL) {
 				std::cout << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << std::endl;
 			}
@@ -81,7 +85,7 @@ void RenderManager::getClProgram(){
 		&err_code);
 	if (err_code != 0){std::cout << "error create cl progran : " << err_code  << " for prog : " << prog << std::endl;}
 	
-	cl_int ret = clBuildProgram(prog, 1, &this->clDevice, NULL, NULL, NULL);
+	cl_int ret = clBuildProgram(prog, 1, &this->clDevice, "-cl-fast-relaxed-math", NULL, NULL);
 	
 	if (ret != 0){std::cout << "error compilation cl program : " << ret << std::endl;}
 
@@ -165,7 +169,7 @@ void RenderManager::draw(){
 	GL_DUMP_ERROR("glGenVertexArrays : ");
 	glBindVertexArray(vao);
 	GL_DUMP_ERROR("glBindVertexArray : ");
-	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(0));
+	glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(0));
 	GL_DUMP_ERROR("glVertexAttribPointer : ");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
@@ -178,22 +182,37 @@ void RenderManager::_initGLCL(){
 	
 	cl_uint         nb_platform;
 	cl_uint         nb_device;
-	cl_platform_id  platforms[10];
-	cl_device_id    devices[10];
+	cl_platform_id  platforms[100];
+	cl_device_id    devices[100];
 
 	clGetPlatformIDs(
-			10,
+			100,
 			platforms,
 			&nb_platform);
 
 	clGetDeviceIDs(
 			platforms[0],
 			CL_DEVICE_TYPE_GPU,
-			10,
+			100,
 			devices,
 			&nb_device);
 	
 	this->clDevice = devices[0];
+
+	for (int i = 0; i < 10; i++)
+	{
+		size_t retSize;
+		clGetDeviceInfo(devices[0], CL_DEVICE_NAME, 0, NULL, &retSize);
+		if (retSize == 0)
+			continue;
+		char extensions[retSize];
+		clGetDeviceInfo(devices[0], CL_DEVICE_NAME, retSize, extensions, &retSize);
+		std::cout << extensions << std::endl;
+	}
+	cl_uint nb;
+	clGetDeviceInfo(this->clDevice, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, sizeof(cl_uint), &nb, NULL);
+	std::cout << "vector width : " << nb << std::endl;
+	
 
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -219,6 +238,7 @@ void RenderManager::_initGLCL(){
 
 	this->vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,this->vbo,&err_code);
 	if (err_code != 0){std::cout << "cll mem allocation " << err_code << std::endl;}
+
 }
 
 void RenderManager::initParticule(){
@@ -233,7 +253,8 @@ void RenderManager::initParticule(){
 	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueue object " << err_code << std::endl;}
 
-	err_code = clSetKernelArg(this->initKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
+
+	err_code = clSetKernelArg(this->initKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl);
 	if (err_code != 0){std::cout << "set kernel arg0 init " << err_code << std::endl;}
 	err_code = clSetKernelArg(this->initKernel, 1, sizeof(uint), (void *)&this->caracSize);
 	if (err_code != 0){std::cout << "set kernel arg1 init " << err_code << std::endl;}
@@ -242,12 +263,12 @@ void RenderManager::initParticule(){
 
 	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->initKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
 	if (err_code != 0){std::cout << "enqueue kernel " << err_code << std::endl;}
-
-
+	
 	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueu release " << err_code << std::endl;}
 
 	clFinish(cmd_queue);
+
 }
 
 void RenderManager::update(){
@@ -256,25 +277,38 @@ void RenderManager::update(){
 
 	glFinish(); 
 
-	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
-	if (err_code != 0){std::cout << "enqueue object in update " << err_code << std::endl;}
-
-	err_code = clSetKernelArg(this->updateKernel, 0, sizeof(this->vbo_cl), (void *)&this->vbo_cl);
+	err_code = clSetKernelArg(this->updateKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl);
 	if (err_code != 0){std::cout << "set kernel arg0 update " << err_code << std::endl;}
 	err_code = clSetKernelArg(this->updateKernel, 1, sizeof(float), (void *)&this->delta);
 	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
-	err_code = clSetKernelArg(this->updateKernel, 2, sizeof(Vec3), (void *)&this->center);
+	err_code = clSetKernelArg(this->updateKernel, 2, sizeof(float[3]), (void *)&this->center);
 	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
+	
+	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	if (err_code != 0){std::cout << "enqueue object in update " << err_code << std::endl;}
 
 	const size_t global_item_size = this->fullSize;
-
-	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->updateKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
-	if (err_code != 0){
-		std::cout << "enqueue kernel in update " << err_code << std::endl;
-		exit(0);}
-
+	
+	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->updateKernel, 1, NULL,	&global_item_size, NULL, 0,	0, 0);
+	if (err_code != 0){		std::cout << "enqueue kernel in update " << err_code << std::endl;		exit(0);}
+	
 	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
 	if (err_code != 0){std::cout << "enqueu release in update " << err_code << std::endl;}
-
+	
 	clFinish(cmd_queue);
+}
+
+void RenderManager::showFPS(float FPS, int frameIndex ){
+    static float mo = 0;
+
+    if (frameIndex < 29)
+    {
+        mo += FPS;
+        return;
+    }
+
+    char str[100];
+    sprintf(str, "%.1f fps", mo/30);
+    SDL_SetWindowTitle(this->window, str);
+    mo = 0;
 }

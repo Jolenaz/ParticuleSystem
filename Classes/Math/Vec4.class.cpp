@@ -42,6 +42,18 @@ bool    Vec4::operator==(Vec4 const & rhs)
         this->w == rhs.w 
     );
 }
+
+Vec4 Vec4::operator+(Vec4 const & rhs) const{
+    return Vec4(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z, this->w + rhs.w);
+}
+
+void Vec4::operator+=(Vec4 const & rhs){
+    this->x += rhs.x;
+    this->y += rhs.y;
+    this->z += rhs.z;
+    this->w += rhs.w;
+}
+
 float  & Vec4::operator[](int const i){
     if (i == 0)
         return this->x;
