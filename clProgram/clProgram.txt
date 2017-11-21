@@ -1,6 +1,40 @@
+typedef struct s_vertex{
+    float4 pos;
+    float4 speed;
+}   vertex;
+
+__kernel void initPoints(__global float4* pos,__global float4* speed, uint caracSize) 
+{
+    float4 ret = 1.0f;
+    uint index = get_global_id(0);
+
+    uint tmp = caracSize * caracSize;
+    ret.s0 = (float)((index % tmp) / caracSize) / caracSize * 10.0f - 5.0f;
+    ret.s1 = (float)((index % tmp) % caracSize) / caracSize * 10.0f - 5.0f;
+    ret.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
+    pos[index] = ret;
+    speed[index] = 0.0f;
+}
+
+
+__kernel void updatePoints(__global float4* pos,__global float4* speed, float delta, float4 centre) 
+{   
+    uint index = get_global_id(0); 
+    float4 newPos = pos[index];
+    float4 newSpeed = speed[index];
+    float4 acc = 0.0f;
+    acc = fast_normalize(centre - newPos);
+    newPos = newPos + newSpeed * delta;
+    newSpeed = newSpeed + acc * delta;
+    //new.pos = new.pos + delta;
+    //new.speed = new.speed + delta;
+    pos[index] = newPos;
+    speed[index] = newSpeed;
+}
+
 //typedef struct s_vertex{
-//    float4 pos;
-//    float4 speed;
+//    float3 pos;
+//    float3 speed;
 //}   vertex;
 //
 //__kernel void initPoints(__global vertex* buffer, uint caracSize) 
@@ -12,48 +46,17 @@
 //    ret.pos.s0 = (float)((index % tmp) / caracSize) / caracSize * 10.0f - 5.0f;
 //    ret.pos.s1 = (float)((index % tmp) % caracSize) / caracSize * 10.0f - 5.0f;
 //    ret.pos.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
-//    ret.pos.s3 = 1.0f;
 //    ret.speed = 0.0f;
 //    buffer[index] = ret;
 //}
 //
 //
-//__kernel void updatePoints(__global vertex* buffer, float delta, float4 centre) 
+//__kernel void updatePoints(__global vertex* buffer, float delta, float3 centre) 
 //{   
 //    uint index = get_global_id(0); 
 //    vertex new = buffer[index];
-//    float4 acc = fast_normalize(centre - buffer[index].pos);
-//    acc.s3 = 0.0f;
+//    float3 acc = fast_normalize(centre - buffer[index].pos);
 //    new.pos += new.speed * delta;
-//    new.speed += acc * delta;
-//    //buffer[index] = new;
+//    new.speed += acc * delta * 6.0f;
+//    buffer[index] = new;
 //}
-
-typedef struct s_vertex{
-    float3 pos;
-    float3 speed;
-}   vertex;
-
-__kernel void initPoints(__global vertex* buffer, uint caracSize) 
-{
-    vertex ret;
-    uint index = get_global_id(0);
-
-    uint tmp = caracSize * caracSize;
-    ret.pos.s0 = (float)((index % tmp) / caracSize) / caracSize * 10.0f - 5.0f;
-    ret.pos.s1 = (float)((index % tmp) % caracSize) / caracSize * 10.0f - 5.0f;
-    ret.pos.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
-    ret.speed = 0.0f;
-    buffer[index] = ret;
-}
-
-
-__kernel void updatePoints(__global vertex* buffer, float delta, float3 centre) 
-{   
-    uint index = get_global_id(0); 
-    vertex new = buffer[index];
-    float3 acc = fast_normalize(centre - buffer[index].pos);
-    new.pos += new.speed * delta;
-    new.speed += acc * delta * 6.0f;
-    buffer[index] = new;
-}

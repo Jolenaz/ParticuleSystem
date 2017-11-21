@@ -10,13 +10,14 @@ void GL_DUMP_ERROR(std::string message){
 
 RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->cam.ratio = (float)w / (float)h;
+	this->delta = 0;
 	this->cam.transform.translate(Vec3(0.0,2.0,20.0));
 	this->caracSize = caracSize;
 	this->fullSize =  caracSize * caracSize * caracSize;
 	this->center[0] = 0.0f;
 	this->center[1] = 0.0f;
 	this->center[2] = 0.0f;
-	//this->center[3] = 1.0f;
+	this->center[3] = 1.0f;
 	this->delta = 1.0f / 60.0f;
 	std::cout << this->fullSize << std::endl;
 	this->_initSDL(w,h);
@@ -161,7 +162,7 @@ void RenderManager::draw(){
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_DUMP_ERROR("glClear : ");
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_gl_pos);
 	GL_DUMP_ERROR("glBindBuffer : ");
 
 	GLuint vao;
@@ -169,7 +170,7 @@ void RenderManager::draw(){
 	GL_DUMP_ERROR("glGenVertexArrays : ");
 	glBindVertexArray(vao);
 	GL_DUMP_ERROR("glBindVertexArray : ");
-	glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(0));
+	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (GLvoid*)(0));
 	GL_DUMP_ERROR("glVertexAttribPointer : ");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
@@ -186,10 +187,19 @@ void RenderManager::_initGLCL(){
 	cl_device_id    devices[100];
 
 	clGetPlatformIDs(
-			100,
+			1,
 			platforms,
 			&nb_platform);
 
+	std::cout << "nb de platform : " <<  nb_platform << std::endl;
+			
+	clGetPlatformIDs(
+		nb_platform,
+		platforms,
+		NULL);			
+
+	std::cout << "nb de platform : " <<  nb_platform << std::endl;
+		
 	clGetDeviceIDs(
 			platforms[0],
 			CL_DEVICE_TYPE_GPU,
@@ -197,26 +207,19 @@ void RenderManager::_initGLCL(){
 			devices,
 			&nb_device);
 	
+	std::cout << "nb de device : " <<  nb_device << std::endl;
+			
+
 	this->clDevice = devices[0];
 
-	for (int i = 0; i < 10; i++)
-	{
-		size_t retSize;
-		clGetDeviceInfo(devices[0], CL_DEVICE_NAME, 0, NULL, &retSize);
-		if (retSize == 0)
-			continue;
-		char extensions[retSize];
-		clGetDeviceInfo(devices[0], CL_DEVICE_NAME, retSize, extensions, &retSize);
-		std::cout << extensions << std::endl;
-	}
 	cl_uint nb;
 	clGetDeviceInfo(this->clDevice, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, sizeof(cl_uint), &nb, NULL);
 	std::cout << "vector width : " << nb << std::endl;
 	
 
-	glGenBuffers(1, &this->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	glBufferData(GL_ARRAY_BUFFER, this->fullSize * sizeof(Vertex),NULL,GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &this->vbo_gl_pos);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_gl_pos);
+	glBufferData(GL_ARRAY_BUFFER, this->fullSize * sizeof(float) * 4,NULL,GL_DYNAMIC_DRAW);
 
 	CGLContextObj    gl_ctx        = CGLGetCurrentContext();
 	CGLShareGroupObj gl_sharegroup = CGLGetShareGroup(gl_ctx);
@@ -236,8 +239,14 @@ void RenderManager::_initGLCL(){
 									&err_code);
 	if (err_code != 0) {std::cout << "error create cl context : " << err_code  << " for context : " << this->clContext << std::endl;}
 
-	this->vbo_cl = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,this->vbo,&err_code);
+	this->vbo_cl_pos = clCreateFromGLBuffer(this->clContext,CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,this->vbo_gl_pos,&err_code);
 	if (err_code != 0){std::cout << "cll mem allocation " << err_code << std::endl;}
+
+	this->vbo_cl_speed = clCreateBuffer(this->clContext,CL_MEM_READ_WRITE,this->fullSize * sizeof(float) * 4,NULL,&err_code);
+	if (err_code != 0){std::cout << "cll mem allocation " << err_code << std::endl;}
+
+	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
+	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
 
 }
 
@@ -247,16 +256,15 @@ void RenderManager::initParticule(){
 
 	glFinish(); 
 
-	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
-	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
-
-	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl_pos, 0,0,0);
 	if (err_code != 0){std::cout << "enqueue object " << err_code << std::endl;}
 
 
-	err_code = clSetKernelArg(this->initKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl);
+	err_code = clSetKernelArg(this->initKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl_pos);
 	if (err_code != 0){std::cout << "set kernel arg0 init " << err_code << std::endl;}
-	err_code = clSetKernelArg(this->initKernel, 1, sizeof(uint), (void *)&this->caracSize);
+	err_code = clSetKernelArg(this->initKernel, 1, sizeof(cl_mem), (void *)&this->vbo_cl_speed);
+	if (err_code != 0){std::cout << "set kernel arg0 init " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->initKernel, 2, sizeof(uint), (void *)&this->caracSize);
 	if (err_code != 0){std::cout << "set kernel arg1 init " << err_code << std::endl;}
 
 	const size_t global_item_size = this->fullSize;
@@ -264,7 +272,7 @@ void RenderManager::initParticule(){
 	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->initKernel, 1, NULL, &global_item_size, NULL, 0, NULL, NULL);
 	if (err_code != 0){std::cout << "enqueue kernel " << err_code << std::endl;}
 	
-	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl_pos, 0,0,0);
 	if (err_code != 0){std::cout << "enqueu release " << err_code << std::endl;}
 
 	clFinish(cmd_queue);
@@ -275,16 +283,18 @@ void RenderManager::update(){
 
 	cl_int err_code;
 
-	glFinish(); 
+	glFlush(); 
 
-	err_code = clSetKernelArg(this->updateKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl);
+	err_code = clSetKernelArg(this->updateKernel, 0, sizeof(cl_mem), (void *)&this->vbo_cl_pos);
 	if (err_code != 0){std::cout << "set kernel arg0 update " << err_code << std::endl;}
-	err_code = clSetKernelArg(this->updateKernel, 1, sizeof(float), (void *)&this->delta);
+	err_code = clSetKernelArg(this->updateKernel, 1, sizeof(cl_mem), (void *)&this->vbo_cl_speed);
+	if (err_code != 0){std::cout << "set kernel arg0 update " << err_code << std::endl;}
+	err_code = clSetKernelArg(this->updateKernel, 2, sizeof(float), (void *)&this->delta);
 	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
-	err_code = clSetKernelArg(this->updateKernel, 2, sizeof(float[3]), (void *)&this->center);
+	err_code = clSetKernelArg(this->updateKernel, 3, sizeof(float[4]), (void *)&this->center);
 	if (err_code != 0){std::cout << "set kernel arg1 update " << err_code << std::endl;}
 	
-	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	err_code = clEnqueueAcquireGLObjects(this->cmd_queue, 1, &this->vbo_cl_pos, 0,0,0);
 	if (err_code != 0){std::cout << "enqueue object in update " << err_code << std::endl;}
 
 	const size_t global_item_size = this->fullSize;
@@ -292,7 +302,7 @@ void RenderManager::update(){
 	err_code = clEnqueueNDRangeKernel(this->cmd_queue, this->updateKernel, 1, NULL,	&global_item_size, NULL, 0,	0, 0);
 	if (err_code != 0){		std::cout << "enqueue kernel in update " << err_code << std::endl;		exit(0);}
 	
-	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl, 0,0,0);
+	err_code = clEnqueueReleaseGLObjects(this->cmd_queue, 1, &this->vbo_cl_pos, 0,0,0);
 	if (err_code != 0){std::cout << "enqueu release in update " << err_code << std::endl;}
 	
 	clFinish(cmd_queue);

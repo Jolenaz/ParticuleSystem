@@ -1,7 +1,7 @@
 #include "particule.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
-#define NB_POINT 1000000
+#define NB_POINT 3000000
 
 int main_loop(RenderManager & rManager){
         SDL_Event		ev;

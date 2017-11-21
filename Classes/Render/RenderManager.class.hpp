@@ -45,8 +45,9 @@ public:
     void            update();
     void            draw();
     SDL_Window      *window;
-    GLuint          vbo;
-    cl_mem          vbo_cl;
+    GLuint          vbo_gl_pos;
+    cl_mem          vbo_cl_pos;
+    cl_mem          vbo_cl_speed;
     cl_command_queue cmd_queue;
     SDL_GLContext   glContext;
     cl_context      clContext;
@@ -59,6 +60,7 @@ public:
     uint            fullSize;
 
     float           delta;
-    float            center[3];
-
+    float            center[4];
+    //float            center[3];
+    
 };
