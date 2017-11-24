@@ -13,7 +13,7 @@
 #include "Camera.class.hpp"
 
 Camera::Camera(){
-    this->fov = 50;
+    this->fov = 60;
     this->near = 1;
     this->far = 100;
     this->ratio = 4.0f / 3.0f;

@@ -11,7 +11,7 @@ void GL_DUMP_ERROR(std::string message){
 RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->cam.ratio = (float)w / (float)h;
 	this->delta = 0;
-	this->cam.transform.translate(Vec3(0.0,2.0,20.0));
+	this->cam.transform.translate(Vec3(0.0,0.0,40.0));
 	this->caracSize = caracSize;
 	this->fullSize =  caracSize * caracSize * caracSize;
 	this->center[0] = 0.0f;
@@ -37,10 +37,6 @@ void RenderManager::_initSDL(int width, int height){
 		if (this->window == NULL) {
 			std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		} else {
-			// SDL_ShowCursor(SDL_DISABLE);
-			// SDL_WarpMouseInWindow(this->window, width / 2, height / 2);
-			// SDL_SetWindowGrab(this->window, SDL_TRUE);
-			// SDL_SetRelativeMouseMode(SDL_TRUE);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);

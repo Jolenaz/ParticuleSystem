@@ -41,6 +41,8 @@ public:
     float  & operator[](int const i);
     bool    operator==(Vec4 const & rhs);
     Vec4    operator+(Vec4 const & src) const;
+    Vec4    operator-(Vec4 const & src) const;
+    Vec4    operator*(float const & src) const;
     void    operator+=(Vec4 const & src);
 
 };

@@ -1,14 +1,14 @@
 #include "particule.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
-#define NB_POINT 3000000
+#define NB_POINT 1000000
 
 int main_loop(RenderManager & rManager){
         SDL_Event		ev;
         SDL_PumpEvents();
 
         if (SDL_PollEvent(&ev)){
-                if (ev.key.keysym.sym == SDLK_c || ev.key.keysym.sym == SDLK_ESCAPE || ev.type == SDL_QUIT)
+                if ( ( ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_c || ev.key.keysym.sym == SDLK_ESCAPE)))
                         return (0);
                 if (ev.key.keysym.sym == SDLK_w){
                         rManager.cam.translateCam(Vec3(0,0,-0.1)); 
@@ -42,10 +42,32 @@ int main_loop(RenderManager & rManager){
                         rManager.debug = 1;}
                 if (ev.key.keysym.sym == SDLK_t){
                      //   rManager.center += Vec4(1.0f, 1.0f, 1.0f, 0.0f);
-                        std::cout << rManager.center << std::endl;
+                      //  std::cout << rManager.center << std::endl;
                         rManager.debug = 1;}
         }
         return (1);
+}
+
+void get_mouse(RenderManager & rManager){
+        
+int x;
+int y;
+
+SDL_GetMouseState(&x,&y);
+
+Vec4 pos;
+
+pos.x = 2 * float(x) / 768.0 - 4.0 / 3.0;
+pos.y = -2 * float(y) / 768.0 + 1.0;
+pos.z = -1.0f;
+pos.w = 1.0;
+
+Vec3 ray = (rManager.cam.transform.get_position() + (Vec3(rManager.cam.transform.get_worldToLocal() * pos) - rManager.cam.transform.get_position()) * rManager.cam.transform.get_position().z) * tanf(rManager.cam.fov / 2.0f * M_PI / 180.0f) * 2.0f;
+        
+rManager.center[0] = ray.x;
+rManager.center[1] = ray.y;
+rManager.center[2] = ray.z;
+
 }
 
 int main()
@@ -62,6 +84,7 @@ int main()
         {
                 tmp = SDL_GetTicks() - old_time;
                 rManager.delta = (double)tmp / 1000.0f ;
+                get_mouse(rManager);
                 old_time += tmp;
                 timeru += rManager.delta;
                 rManager.showFPS(1/rManager.delta, i);

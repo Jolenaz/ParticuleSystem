@@ -47,6 +47,14 @@ Vec4 Vec4::operator+(Vec4 const & rhs) const{
     return Vec4(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z, this->w + rhs.w);
 }
 
+Vec4 Vec4::operator-(Vec4 const & rhs) const{
+    return Vec4(this->x - rhs.x, this->y - rhs.y, this->z - rhs.z, this->w - rhs.w);
+}
+
+Vec4 Vec4::operator*(float const & rhs) const{
+    return Vec4(this->x * rhs, this->y  * rhs, this->z  * rhs, this->w  * rhs);
+}
+
 void Vec4::operator+=(Vec4 const & rhs){
     this->x += rhs.x;
     this->y += rhs.y;

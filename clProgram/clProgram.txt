@@ -14,6 +14,12 @@ __kernel void initPoints(__global float4* pos,__global float4* speed, uint carac
     ret.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
     pos[index] = ret;
     speed[index] = 0.0f;
+    //uint tmp = caracSize * caracSize;
+    //ret.s0 = 30.0f;
+    //ret.s1 = 20.0f;
+    //ret.s2 = 0.0f;
+    //pos[index] = ret;
+    //speed[index] = 0.0f;
 }
 
 
@@ -24,8 +30,8 @@ __kernel void updatePoints(__global float4* pos,__global float4* speed, float de
     float4 newSpeed = speed[index];
     float4 acc = 0.0f;
     acc = fast_normalize(centre - newPos);
-    newPos = newPos + newSpeed * delta;
-    newSpeed = newSpeed + acc * delta;
+    newPos = newPos + newSpeed * delta * 2.0f;
+    newSpeed = newSpeed + acc * delta * 9.8f;
     //new.pos = new.pos + delta;
     //new.speed = new.speed + delta;
     pos[index] = newPos;
