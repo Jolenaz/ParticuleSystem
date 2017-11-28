@@ -11,13 +11,13 @@ void GL_DUMP_ERROR(std::string message){
 RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->cam.ratio = (float)w / (float)h;
 	this->delta = 0;
-	this->cam.transform.translate(Vec3(0.0,0.0,40.0));
+	this->running = 0;
+	this->timeru = 0;
+	this->save = 0;
+	this->cam.transform.translate(Vec3(0.0,0.0,20.0));
 	this->caracSize = caracSize;
 	this->fullSize =  caracSize * caracSize * caracSize;
-	this->center[0] = 0.0f;
-	this->center[1] = 0.0f;
-	this->center[2] = 0.0f;
-	this->center[3] = 1.0f;
+	this->center = Vec4(Vec3(),1.0f);
 	this->delta = 1.0f / 60.0f;
 	std::cout << this->fullSize << std::endl;
 	this->_initSDL(w,h);
@@ -151,27 +151,53 @@ void RenderManager::getGlProgram(){
 
 void RenderManager::draw(){
 
+	static int curColorIndex = 0;
+
+	Vec4 tColor = Vec4();
+
+	if (this->timeru < 1.0f)
+	{
+		int prevColorIndex = curColorIndex == 0 ? 4 : curColorIndex - 1;
+		tColor = this->colors[curColorIndex] * this->timeru + this->colors[prevColorIndex] * (1.0f - this->timeru );
+	}else{
+		tColor = this->colors[curColorIndex];
+	}
+
+	if (this->timeru >= 6.0f)
+	{
+		//this->timeru = 0.0f;
+		//curColorIndex += 1;
+		//curColorIndex %= 5;
+	}
+	
+
 	glUseProgram(this->glProgramId);
 	GL_DUMP_ERROR("glUseProgram : ");
 	Mat4 VP =  this->cam.get_projMat() * this->cam.transform.get_localToWorld();
 	glUniformMatrix4fv(glGetUniformLocation(this->glProgramId, "VP"), 1, GL_TRUE, (const GLfloat*)&VP.value);
+
+	if (this->debug){
+		this->debug = 0;
+		std::cout << VP << std::endl;
+	}
+
+	GL_DUMP_ERROR("glUniformMatrix4fv : ");
+	glUniform4f(glGetUniformLocation(this->glProgramId, "center"), this->center[0],this->center[1],this->center[2],1.0f);
+	GL_DUMP_ERROR("glUniformMatrix4fv : ");
+	glUniform4f(glGetUniformLocation(this->glProgramId, "inColor"), tColor.x,tColor.y,tColor.z,1.0f);
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_DUMP_ERROR("glClear : ");
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_gl_pos);
 	GL_DUMP_ERROR("glBindBuffer : ");
 
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	GL_DUMP_ERROR("glGenVertexArrays : ");
-	glBindVertexArray(vao);
-	GL_DUMP_ERROR("glBindVertexArray : ");
-	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (GLvoid*)(0));
-	GL_DUMP_ERROR("glVertexAttribPointer : ");
+	glBindVertexArray(this->vao);
+	GL_DUMP_ERROR("glBindVertexArray int draw : ");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
 	glDrawArrays(GL_POINTS,0,this->fullSize);
 	GL_DUMP_ERROR("glDrawArrays : ");
+	glDisableVertexAttribArray(0);
 	SDL_GL_SwapWindow(this->window);
 }
 
@@ -243,6 +269,13 @@ void RenderManager::_initGLCL(){
 
 	this->cmd_queue = clCreateCommandQueue(this->clContext, this->clDevice, 0, &err_code);
 	if (err_code != 0){std::cout << "create command queue " << err_code << std::endl;}
+
+	glGenVertexArrays(1, &this->vao);
+	GL_DUMP_ERROR("glGenVertexArrays : ");
+	glBindVertexArray(this->vao);
+	GL_DUMP_ERROR("glBindVertexArray : ");
+	glVertexAttribPointer(0,4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (GLvoid*)(0));
+	GL_DUMP_ERROR("glVertexAttribPointer : ");
 
 }
 

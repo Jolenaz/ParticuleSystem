@@ -61,7 +61,6 @@ void Camera::translateCam(Vec3 trans){
     Vec4 trans4(trans, 0.0f);
 
     Vec3 newTrans( this->transform.get_worldToLocal() * trans4 );
-
     this->transform.translate(newTrans);
 
 }

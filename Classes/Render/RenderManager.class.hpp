@@ -32,10 +32,22 @@ class RenderManager{
     
 public:
     
+    std::vector<Vec4> colors = {
+        {1.0f,0.0f,0.0f,1.0f},
+        {0.0f,1.0f,1.0f,1.0f},
+        {1.0f,0.0f,1.0f,1.0f},
+        {1.0f,1.0f,0.0f,1.0f},
+        {0.5f,0.5f,1.0f,1.0f}
+    };
+
     void            showFPS(float FPS, int frameIndex );
 
-    int debug;
-    Camera cam;
+    int             debug;
+    void            draw_debug();
+
+    int             running;
+    int             save;
+    Camera          cam;
     void            _initSDL(int width, int height);
     void            _initGLCL();
     void            getClProgram();
@@ -46,6 +58,7 @@ public:
     void            draw();
     SDL_Window      *window;
     GLuint          vbo_gl_pos;
+    GLuint          vao;
     cl_mem          vbo_cl_pos;
     cl_mem          vbo_cl_speed;
     cl_command_queue cmd_queue;
@@ -60,7 +73,6 @@ public:
     uint            fullSize;
 
     float           delta;
-    float            center[4];
-    //float            center[3];
-    
+    double          timeru;
+    Vec4            center;
 };

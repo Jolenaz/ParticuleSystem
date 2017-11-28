@@ -292,27 +292,7 @@ Mat4    & Mat4::rotateAroundInverse(Vec4 const & rotation)
 
 Mat4    & Mat4::rotateAroundInverse(Vec3 const & axe, float const & angle)
 {
-    Mat4 ret;
-    ret.set_identity();
-    Vec3 NAxe(axe);
-    NAxe.normalize();
-
-    float c = cos(-angle * M_PI / 180.0f);
-    float s = sin(-angle * M_PI / 180.0f);
-
-    ret.value.m00 = NAxe.x * NAxe.x + (1 - NAxe.x * NAxe.x) * c;
-    ret.value.m01 = NAxe.x * NAxe.y * (1 - c) - NAxe.z * s;
-    ret.value.m02 = NAxe.x * NAxe.z * (1 - c) + NAxe.y * s;
-    ret.value.m10 = NAxe.x * NAxe.y * (1 - c) + NAxe.z * s;
-    ret.value.m11 = NAxe.y * NAxe.y + (1 - NAxe.y * NAxe.y) * c;
-    ret.value.m12 = NAxe.y * NAxe.z * (1 - c) - NAxe.x * s;
-    ret.value.m20 = NAxe.x * NAxe.z * (1 - c) - NAxe.y * s;
-    ret.value.m21 = NAxe.y * NAxe.z * (1 - c) + NAxe.x * s;
-    ret.value.m22 = NAxe.z * NAxe.z + (1 - NAxe.z * NAxe.z) * c;
-
-    *this = ret * *this;;
-
-    return (*this); 
+    return (Mat4::rotateAround(axe, -1 * angle)); 
 }
 
 Mat4    & Mat4::rotateLocalInverse(Vec3 const & angles)
