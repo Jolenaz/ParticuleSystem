@@ -169,7 +169,7 @@ std::ostream & operator<<(std::ostream & o, Mat4 const & input)
         o << "| ";
         for (int j = 0; j < 4; j++)
         {
-            o << input.value.mc[i][j] << " ";
+            o << (abs(input.value.mc[i][j]) < 0.00001 ? 0 : input.value.mc[i][j]) << " ";
         }
         o << "|" << std::endl;
     }
@@ -256,6 +256,19 @@ Mat4    & Mat4::rotateLocal(Vec3 const & angles)
     return *this;
 }
 
+Mat4    & Mat4::rotateLocalInverse(Vec3 const & angles)
+{
+    Mat4 ret;
+    ret.set_identity();
+
+    ret.rotateAroundInverse(Vec3(ret * Vec4(0,0,1,0)), angles.z);
+    ret.rotateAroundInverse(Vec3(ret * Vec4(0,1,0,0)), angles.y );
+    ret.rotateAroundInverse(Vec3(1,0,0), angles.x );
+
+    *this = ret * *this;;
+    return *this;
+}
+
 Mat4    & Mat4::rotateGlobal(Vec3 const & angles)
 {
     Mat4 ret;
@@ -292,21 +305,29 @@ Mat4    & Mat4::rotateAroundInverse(Vec4 const & rotation)
 
 Mat4    & Mat4::rotateAroundInverse(Vec3 const & axe, float const & angle)
 {
-    return (Mat4::rotateAround(axe, -1 * angle)); 
-}
-
-Mat4    & Mat4::rotateLocalInverse(Vec3 const & angles)
-{
     Mat4 ret;
     ret.set_identity();
+    Vec3 NAxe(axe);
+    NAxe.normalize();
 
-    ret.rotateAroundInverse(Vec3(1,0,0), angles.x );
-    ret.rotateAroundInverse(Vec3(ret * Vec4(0,1,0,0)), angles.y );
-    ret.rotateAroundInverse(Vec3(ret * Vec4(0,0,1,0)), angles.z);
+    float c = cos(-angle * M_PI / 180.0f);
+    float s = sin(-angle * M_PI / 180.0f);
 
-    *this = ret * *this;;
-    return *this;
+    ret.value.m00 = NAxe.x * NAxe.x + (1 - NAxe.x * NAxe.x) * c;
+    ret.value.m01 = NAxe.x * NAxe.y * (1 - c) - NAxe.z * s;
+    ret.value.m02 = NAxe.x * NAxe.z * (1 - c) + NAxe.y * s;
+    ret.value.m10 = NAxe.x * NAxe.y * (1 - c) + NAxe.z * s;
+    ret.value.m11 = NAxe.y * NAxe.y + (1 - NAxe.y * NAxe.y) * c;
+    ret.value.m12 = NAxe.y * NAxe.z * (1 - c) - NAxe.x * s;
+    ret.value.m20 = NAxe.x * NAxe.z * (1 - c) - NAxe.y * s;
+    ret.value.m21 = NAxe.y * NAxe.z * (1 - c) + NAxe.x * s;
+    ret.value.m22 = NAxe.z * NAxe.z + (1 - NAxe.z * NAxe.z) * c;
+
+    *this = *this * ret;
+    return *this; 
 }
+
+
 
 Mat4    & Mat4::rotateGlobalInverse(Vec3 const & angles)
 {

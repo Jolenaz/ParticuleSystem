@@ -346,3 +346,32 @@ int main(int argc, char** argv)
 #endif
 }
 
+Determining if the CL_VERSION_2_0 exist failed with the following output:
+Change Dir: /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_15baa/fast"
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_15baa.dir/build.make CMakeFiles/cmTC_15baa.dir/build
+Building C object CMakeFiles/cmTC_15baa.dir/CheckSymbolExists.c.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk   -o CMakeFiles/cmTC_15baa.dir/CheckSymbolExists.c.o   -c /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: use of undeclared identifier 'CL_VERSION_2_0'
+  return ((int*)(&CL_VERSION_2_0))[argc];
+                  ^
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_15baa.dir/CheckSymbolExists.c.o] Error 1
+make: *** [cmTC_15baa/fast] Error 2
+
+File /Users/jonas/42/projets/ParticuleSystem/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef CL_VERSION_2_0
+  return ((int*)(&CL_VERSION_2_0))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+

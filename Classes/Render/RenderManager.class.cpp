@@ -176,10 +176,6 @@ void RenderManager::draw(){
 	Mat4 VP =  this->cam.get_projMat() * this->cam.transform.get_localToWorld();
 	glUniformMatrix4fv(glGetUniformLocation(this->glProgramId, "VP"), 1, GL_TRUE, (const GLfloat*)&VP.value);
 
-	if (this->debug){
-		this->debug = 0;
-		std::cout << VP << std::endl;
-	}
 
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
 	glUniform4f(glGetUniformLocation(this->glProgramId, "center"), this->center[0],this->center[1],this->center[2],1.0f);
