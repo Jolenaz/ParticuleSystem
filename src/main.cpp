@@ -18,12 +18,13 @@ int main()
         {
                 tmp = SDL_GetTicks() - old_time;
                 rManager.delta = (double)tmp / 1000.0f ;
-                sManager.get_mouse(rManager);
+                if (sManager.state == fly)
+                        sManager.get_mouse(rManager);
                 old_time += tmp;
                 rManager.timeru += rManager.delta;
                 rManager.showFPS(1/rManager.delta, i);
                 rManager.draw();
-                if (rManager.running)
+                if (!sManager.pause)
                         rManager.update();
                 i = i < 29 ? i + 1 : 0;
         }

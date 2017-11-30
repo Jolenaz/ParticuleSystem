@@ -8,26 +8,33 @@ int SceneManager::main_loop(){
     if (SDL_PollEvent(&ev)){
         if ( ( ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_c || ev.key.keysym.sym == SDLK_ESCAPE)))
                 return (0);
-        switch (this->state){
-            case fly:
+        if (ev.key.keysym.sym == SDLK_SPACE && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+                this->pause = !this->pause;
+        }
+        if (ev.key.keysym.sym == SDLK_KP_1 && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+                this->state = fixed;
+        }
+        if (ev.key.keysym.sym == SDLK_KP_2 && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+                this->state = fly;
+        }
+        if (this->pause){
                 this->flyMode(ev);
-            case normal:
-                this->normalMode(ev);
-            case track:
-                this->trackMode(ev);
+        }
+        else{
+                switch (this->state){
+                case fly:
+                        this->flyMode(ev);
+                case fixed:
+                        this->fixedMode(ev);
+                }
         }
     }
     return (1);
 }
 
-void SceneManager::normalMode(SDL_Event ev)
+void SceneManager::fixedMode(SDL_Event ev)
 {
 
-}
-
-void SceneManager::trackMode(SDL_Event ev)
-{
-    
 }
 
 void SceneManager::flyMode(SDL_Event ev)
@@ -67,9 +74,6 @@ void SceneManager::flyMode(SDL_Event ev)
             rManager.initParticule();
             rManager.running = 0;
             }
-    if (ev.key.keysym.sym == SDLK_SPACE && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
-            rManager.running = !rManager.running;
-            }
     if (ev.key.keysym.sym == SDLK_t){
             std::cout << rManager.cam.transform.get_worldToLocal() * rManager.cam.transform.get_localToWorld() << std::endl; 
             //   rManager.center += Vec4(1.0f, 1.0f, 1.0f, 0.0f);
@@ -99,6 +103,7 @@ void SceneManager::get_mouse(RenderManager & rManager){
 
 SceneManager::SceneManager(RenderManager & reManager) : rManager(reManager) {
     this->state = fly;
+    this->pause = true;
 }
 
 SceneManager::~SceneManager(){};
