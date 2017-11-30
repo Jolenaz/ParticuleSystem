@@ -73,7 +73,7 @@ void SceneManager::flyMode(SDL_Event ev)
     if (ev.key.keysym.sym == SDLK_t){
             std::cout << rManager.cam.transform.get_worldToLocal() * rManager.cam.transform.get_localToWorld() << std::endl; 
             //   rManager.center += Vec4(1.0f, 1.0f, 1.0f, 0.0f);
-            //  std::cout << rManager.center << std::endl;
+            // std::cout << rManager.center << std::endl;
             rManager.debug = !rManager.debug;}
 }
 
