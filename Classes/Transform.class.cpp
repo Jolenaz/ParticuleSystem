@@ -98,14 +98,14 @@ Vec3 & Transform::get_scale( void ){
 
 void Transform::_updateMatrixL(){
     Mat4 ret;
-    ret.set_identity().translateInverse(this->position).rotateLocalInverse(this->rotation);
+    ret.set_identity().translateInverse(this->position).rotateGlobalInverse(this->rotation);
 
     this->_localToWorld = ret;
 }
 
 void Transform::_updateMatrixW(){
     Mat4 ret;
-    ret.set_identity().rotateLocal(this->rotation).translate(this->position);
+    ret.set_identity().rotateGlobal(this->rotation).translate(this->position);
 
     this->_worldToLocal = ret;
 }
