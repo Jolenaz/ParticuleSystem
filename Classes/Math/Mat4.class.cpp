@@ -269,6 +269,19 @@ Mat4    & Mat4::rotateLocalInverse(Vec3 const & angles)
     return *this;
 }
 
+Mat4    & Mat4::rotateGlobalInverse(Vec3 const & angles)
+{
+    Mat4 ret;
+    ret.set_identity();
+
+    ret.rotateAroundInverse(Vec3(1,0,0), angles.x);
+    ret.rotateAroundInverse(Vec3(0,1,0), angles.y);
+    ret.rotateAroundInverse(Vec3(0,0,1), angles.z);
+
+    *this = ret * *this;;
+    return *this;
+}
+
 Mat4    & Mat4::rotateGlobal(Vec3 const & angles)
 {
     Mat4 ret;
@@ -328,19 +341,6 @@ Mat4    & Mat4::rotateAroundInverse(Vec3 const & axe, float const & angle)
 }
 
 
-
-Mat4    & Mat4::rotateGlobalInverse(Vec3 const & angles)
-{
-    Mat4 ret;
-    ret.set_identity();
-
-    ret.rotateAroundInverse(Vec3(1,0,0), angles.x);
-    ret.rotateAroundInverse(Vec3(0,1,0), angles.y);
-    ret.rotateAroundInverse(Vec3(0,0,1), angles.z);
-
-    *this = ret * *this;;
-    return *this;
-}
 
 Mat4    & Mat4::translateInverse(Vec3 const & trans)
 {

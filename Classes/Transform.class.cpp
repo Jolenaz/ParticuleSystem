@@ -76,16 +76,6 @@ Mat4 Transform::get_localToWorld( void ){
     return this->_localToWorld;
 }
 
-Mat4 Transform::get_worldToLocalRigide( void ){
-        this->_updateMatrixWRigide();
-    return this->_worldToLocalRigide;
-}
-
-Mat4 Transform::get_localToWorldRigide( void ){
-        this->_updateMatrixLRigide();
-    return this->_localToWorldRigide;
-}
-
 Vec3 & Transform::get_position( void ){
     return (this->position);
 }
@@ -98,32 +88,15 @@ Vec3 & Transform::get_scale( void ){
 
 void Transform::_updateMatrixL(){
     Mat4 ret;
-    ret.set_identity().translateInverse(this->position).rotateLocalInverse(this->rotation);
+    ret.set_identity().translateInverse(this->position).rotateGlobalInverse(this->rotation);
 
     this->_localToWorld = ret;
 }
 
 void Transform::_updateMatrixW(){
     Mat4 ret;
-    ret.set_identity().rotateLocal(this->rotation).translate(this->position);
+    ret.set_identity().rotateGlobal(this->rotation).translate(this->position);
 
     this->_worldToLocal = ret;
 }
 
-void Transform::_updateMatrixLRigide(){
-    Mat4 ret;
-    ret.set_identity().rotateLocalInverse(this->rotation).translateInverse(this->position);
-
-    if (this->parent != NULL)
-        ret = ret * this->parent->get_localToWorldRigide();
-    this->_localToWorldRigide = ret;
-}
-
-void Transform::_updateMatrixWRigide(){
-    Mat4 ret;
-    ret.set_identity().rotateLocal(this->rotation).translate(this->position);
-
-    if (this->parent != NULL)
-        ret = this->parent->get_worldToLocalRigide() * ret;
-    this->_worldToLocalRigide = ret;
-}
