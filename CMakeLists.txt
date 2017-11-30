@@ -31,6 +31,7 @@ set(SOURCE_FILES
 	Classes/Render/Camera.class.cpp
 	Classes/Render/RenderManager.class.cpp
 	Classes/Transform.class.cpp
+	Classes/SceneManager.class.cpp
 	)
 
 add_executable(ParticuleSystem ${SOURCE_FILES})

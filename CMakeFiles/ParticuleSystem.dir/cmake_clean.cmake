@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o"
   "CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o"
   "CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o"
+  "CMakeFiles/ParticuleSystem.dir/Classes/SceneManager.class.cpp.o"
   "ParticuleSystem.pdb"
   "ParticuleSystem"
 )

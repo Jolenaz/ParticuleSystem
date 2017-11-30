@@ -668,6 +668,14 @@ OpenGL/CGLDevice.h
 OpenGL/CGLCurrent.h
 -
 
+/Users/jbelless/ParticuleSystem/Classes/SceneManager.class.cpp
+SceneManager.class.hpp
+/Users/jbelless/ParticuleSystem/Classes/SceneManager.class.hpp
+
+/Users/jbelless/ParticuleSystem/Classes/SceneManager.class.hpp
+render.hpp
+/Users/jbelless/ParticuleSystem/Classes/render.hpp
+
 /Users/jbelless/ParticuleSystem/Classes/Transform.class.cpp
 Transform.class.hpp
 /Users/jbelless/ParticuleSystem/Classes/Transform.class.hpp
@@ -732,6 +740,10 @@ OpenGL/CGLDevice.h
 OpenGL/CGLCurrent.h
 -
 
+Classes/SceneManager.class.hpp
+render.hpp
+Classes/render.hpp
+
 Classes/Transform.class.hpp
 joMath.hpp
 Classes/joMath.hpp
@@ -763,6 +775,8 @@ render.hpp
 include/render.hpp
 Transform.class.hpp
 include/Transform.class.hpp
+SceneManager.class.hpp
+include/SceneManager.class.hpp
 struct.hpp
 include/struct.hpp
 

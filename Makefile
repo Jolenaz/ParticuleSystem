@@ -339,6 +339,33 @@ Classes/Render/RenderManager.class.cpp.s:
 	$(MAKE) -f CMakeFiles/ParticuleSystem.dir/build.make CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.s
 .PHONY : Classes/Render/RenderManager.class.cpp.s
 
+Classes/SceneManager.class.o: Classes/SceneManager.class.cpp.o
+
+.PHONY : Classes/SceneManager.class.o
+
+# target to build an object file
+Classes/SceneManager.class.cpp.o:
+	$(MAKE) -f CMakeFiles/ParticuleSystem.dir/build.make CMakeFiles/ParticuleSystem.dir/Classes/SceneManager.class.cpp.o
+.PHONY : Classes/SceneManager.class.cpp.o
+
+Classes/SceneManager.class.i: Classes/SceneManager.class.cpp.i
+
+.PHONY : Classes/SceneManager.class.i
+
+# target to preprocess a source file
+Classes/SceneManager.class.cpp.i:
+	$(MAKE) -f CMakeFiles/ParticuleSystem.dir/build.make CMakeFiles/ParticuleSystem.dir/Classes/SceneManager.class.cpp.i
+.PHONY : Classes/SceneManager.class.cpp.i
+
+Classes/SceneManager.class.s: Classes/SceneManager.class.cpp.s
+
+.PHONY : Classes/SceneManager.class.s
+
+# target to generate assembly for a file
+Classes/SceneManager.class.cpp.s:
+	$(MAKE) -f CMakeFiles/ParticuleSystem.dir/build.make CMakeFiles/ParticuleSystem.dir/Classes/SceneManager.class.cpp.s
+.PHONY : Classes/SceneManager.class.cpp.s
+
 Classes/Transform.class.o: Classes/Transform.class.cpp.o
 
 .PHONY : Classes/Transform.class.o
@@ -426,6 +453,9 @@ help:
 	@echo "... Classes/Render/RenderManager.class.o"
 	@echo "... Classes/Render/RenderManager.class.i"
 	@echo "... Classes/Render/RenderManager.class.s"
+	@echo "... Classes/SceneManager.class.o"
+	@echo "... Classes/SceneManager.class.i"
+	@echo "... Classes/SceneManager.class.s"
 	@echo "... Classes/Transform.class.o"
 	@echo "... Classes/Transform.class.i"
 	@echo "... Classes/Transform.class.s"

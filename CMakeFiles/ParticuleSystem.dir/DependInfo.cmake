@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/jbelless/ParticuleSystem/Classes/Math/Vec4.class.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/Classes/Math/Vec4.class.cpp.o"
   "/Users/jbelless/ParticuleSystem/Classes/Render/Camera.class.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/Classes/Render/Camera.class.cpp.o"
   "/Users/jbelless/ParticuleSystem/Classes/Render/RenderManager.class.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/Classes/Render/RenderManager.class.cpp.o"
+  "/Users/jbelless/ParticuleSystem/Classes/SceneManager.class.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/Classes/SceneManager.class.cpp.o"
   "/Users/jbelless/ParticuleSystem/Classes/Transform.class.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/Classes/Transform.class.cpp.o"
   "/Users/jbelless/ParticuleSystem/src/main.cpp" "/Users/jbelless/ParticuleSystem/CMakeFiles/ParticuleSystem.dir/src/main.cpp.o"
   )

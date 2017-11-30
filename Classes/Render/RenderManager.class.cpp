@@ -27,7 +27,12 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->initParticule();
 }
 
-RenderManager::~RenderManager(void){}
+RenderManager::~RenderManager(void){
+	clReleaseContext(this->clContext);
+	SDL_GL_DeleteContext(this->glContext);
+	SDL_DestroyWindow(this->window);
+	SDL_Quit();
+}
 
 void RenderManager::_initSDL(int width, int height){
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -51,7 +56,10 @@ void RenderManager::_initSDL(int width, int height){
 			if(this->glContext == NULL) {
 				std::cout << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << std::endl;
 			}
-			//glEnable(GL_DEBUG_OUTPUT);
+			//SDL_ShowCursor(SDL_ENABLE);
+			SDL_WarpMouseInWindow(this->window, width / 2, height / 2);
+			SDL_SetWindowGrab(this->window, SDL_TRUE);
+			//SDL_SetRelativeMouseMode(SDL_TRUE);
 		}
 	}
 }

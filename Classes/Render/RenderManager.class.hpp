@@ -23,11 +23,11 @@ class RenderManager{
     public:
     RenderManager(float, float, uint);
     virtual ~RenderManager(void);
+    RenderManager & operator=(RenderManager const &);
 
     private:
     RenderManager(void);
     RenderManager(RenderManager const &);
-    RenderManager & operator=(RenderManager const &);
     
     
 public:
