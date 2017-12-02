@@ -71,6 +71,8 @@ public:
     
     uint            caracSize;
     uint            fullSize;
+    int             width;
+    int             height;
 
     float           delta;
     double          timeru;

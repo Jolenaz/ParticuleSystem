@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=gnu++14 -isysroot /Applications/Xcode.app/Contents/Developer/P
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2 -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks -I/Users/jonas/42/projets/ParticuleSystem/Classes -I/Users/jonas/42/projets/ParticuleSystem/Classes/Math -I/Users/jonas/42/projets/ParticuleSystem/Classes/Render -I/Users/jonas/42/projets/ParticuleSystem/include 
+CXX_INCLUDES = -I/usr/local/Cellar/sdl2/2.0.7/include/SDL2 -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks -I/Users/jonas/42/projets/ParticuleSystem/Classes -I/Users/jonas/42/projets/ParticuleSystem/Classes/Math -I/Users/jonas/42/projets/ParticuleSystem/Classes/Render -I/Users/jonas/42/projets/ParticuleSystem/include 
 

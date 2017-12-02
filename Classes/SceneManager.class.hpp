@@ -3,7 +3,8 @@
 
 typedef enum e_state{
         fly,
-        fixed,
+        mouseClick,
+        mouseTrack
 }t_state;
 
 class SceneManager{
@@ -18,14 +19,16 @@ public:
     int     main_loop(void); 
 
     t_state state;
-    bool pause;
 
 private:
     RenderManager  & rManager;
     SceneManager(void);
 
     void flyMode(SDL_Event ev);
-    void fixedMode(SDL_Event ev);
+    void clickMode(SDL_Event ev);
+    void trackMode(SDL_Event ev);
 
+    void inputKeyboard(SDL_Event ev);
+    
 
 };

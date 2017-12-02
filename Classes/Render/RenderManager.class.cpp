@@ -19,7 +19,7 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->fullSize =  caracSize * caracSize * caracSize;
 	this->center = Vec4(Vec3(),1.0f);
 	this->delta = 1.0f / 60.0f;
-	std::cout << this->fullSize << std::endl;
+	std::cout << "nombre de particules : " << this->fullSize << std::endl;
 	this->_initSDL(w,h);
 	this->_initGLCL();
 	this->getClProgram();
@@ -35,6 +35,8 @@ RenderManager::~RenderManager(void){
 }
 
 void RenderManager::_initSDL(int width, int height){
+	this->width = width;
+	this->height = height;
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 	} else {
@@ -56,10 +58,9 @@ void RenderManager::_initSDL(int width, int height){
 			if(this->glContext == NULL) {
 				std::cout << "OpenGL context could not be created! SDL Error: " << SDL_GetError() << std::endl;
 			}
-			//SDL_ShowCursor(SDL_ENABLE);
 			SDL_WarpMouseInWindow(this->window, width / 2, height / 2);
 			SDL_SetWindowGrab(this->window, SDL_TRUE);
-			//SDL_SetRelativeMouseMode(SDL_TRUE);
+			SDL_ShowCursor(SDL_DISABLE);
 		}
 	}
 }
@@ -216,15 +217,11 @@ void RenderManager::_initGLCL(){
 			1,
 			platforms,
 			&nb_platform);
-
-	std::cout << "nb de platform : " <<  nb_platform << std::endl;
 			
 	clGetPlatformIDs(
 		nb_platform,
 		platforms,
 		NULL);			
-
-	std::cout << "nb de platform : " <<  nb_platform << std::endl;
 		
 	clGetDeviceIDs(
 			platforms[0],
@@ -232,16 +229,12 @@ void RenderManager::_initGLCL(){
 			100,
 			devices,
 			&nb_device);
-	
-	std::cout << "nb de device : " <<  nb_device << std::endl;
 			
 
 	this->clDevice = devices[0];
 
 	cl_uint nb;
 	clGetDeviceInfo(this->clDevice, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, sizeof(cl_uint), &nb, NULL);
-	std::cout << "vector width : " << nb << std::endl;
-	
 
 	glGenBuffers(1, &this->vbo_gl_pos);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_gl_pos);
