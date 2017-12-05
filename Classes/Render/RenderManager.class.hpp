@@ -52,10 +52,13 @@ public:
     void            _initGLCL();
     void            getClProgram();
     void            getGlProgram();
+    void            getGlIntroProgram();
+    int             getImage(std::string);
 
     void            initParticule();
     void            update();
     void            draw();
+    void            drawIntro();
     SDL_Window      *window;
     GLuint          vbo_gl_pos;
     GLuint          vao;
@@ -66,6 +69,8 @@ public:
     cl_context      clContext;
     cl_device_id    clDevice;
     int             glProgramId;
+    int             glIntroProgramId;
+    int             glIntroImageId;
     cl_kernel       initKernel;
     cl_kernel       updateKernel;
     

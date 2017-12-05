@@ -57,10 +57,15 @@ int main(int ac, char **av)
                 rManager.delta = (double)tmp / 1000.0f ;
                 old_time += tmp;
                 rManager.timeru += rManager.delta;
-                rManager.showFPS(1/rManager.delta, i);
-                rManager.draw();
-                if (sManager.state != fly)
-                        rManager.update();
+                if (sManager.state != intro)
+                {
+                        rManager.showFPS(1/rManager.delta, i);
+                        rManager.draw();
+                        if (sManager.state != fly)
+                                rManager.update();
+                }else{
+                        rManager.drawIntro();
+                }
                 i = i < 29 ? i + 1 : 0;
         }
         return (0);

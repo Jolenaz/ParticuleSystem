@@ -26,18 +26,20 @@ int SceneManager::main_loop(){
                 SDL_ShowCursor(SDL_ENABLE);
                 this->state = mouseTrack;
         }
-        this->inputKeyboard(ev);
-    }
-    switch (this->state){
-        case mouseClick:
+        switch (this->state){
+                case mouseClick:
                 this->clickMode(ev);
                 break;
-        case mouseTrack:
+                case mouseTrack:
                 this->trackMode(ev);
                 break;                
-        case fly:
+                case fly:
                 this->flyMode(ev);
-                break;                
+                break;
+                case intro :
+                return(1);
+        }
+        this->inputKeyboard(ev);
         }
     return (1);
 }
@@ -130,7 +132,7 @@ void SceneManager::get_mouse(RenderManager & rManager){
 }
 
 SceneManager::SceneManager(RenderManager & reManager) : rManager(reManager) {
-    this->state = fly;
+    this->state = intro;
 }
 
 SceneManager::~SceneManager(){};

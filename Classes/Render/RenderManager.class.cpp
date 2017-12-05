@@ -25,6 +25,7 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->getClProgram();
 	this->getGlProgram();
 	this->initParticule();
+	this->glIntroImageId = this->getImage("Intro.bmp");
 }
 
 RenderManager::~RenderManager(void){
@@ -40,7 +41,7 @@ void RenderManager::_initSDL(int width, int height){
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 	} else {
-		this->window = SDL_CreateWindow("HumanGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+		this->window = SDL_CreateWindow("Particules System", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 		if (this->window == NULL) {
 			std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
 		} else {
@@ -61,6 +62,7 @@ void RenderManager::_initSDL(int width, int height){
 			SDL_WarpMouseInWindow(this->window, width / 2, height / 2);
 			SDL_SetWindowGrab(this->window, SDL_TRUE);
 			SDL_ShowCursor(SDL_DISABLE);
+			glEnable(GL_DEPTH_TEST);
 		}
 	}
 }
@@ -347,4 +349,90 @@ void RenderManager::showFPS(float FPS, int frameIndex ){
     sprintf(str, "%.1f fps", mo/30);
     SDL_SetWindowTitle(this->window, str);
     mo = 0;
+}
+
+void RenderManager::getGlIntroProgram(){
+	int ret = glCreateProgram();
+	GL_DUMP_ERROR("glCreateProgram : ");
+	std::vector<t_shader_info> shaders = {
+		{ GL_VERTEX_SHADER, "Shaders/intro.vert" },
+		{ GL_FRAGMENT_SHADER, "Shaders/intro.frag" }
+	};
+	
+    for( t_shader_info si : shaders)
+    {
+        std::string line;
+        std::string source_code;
+
+        std::fstream shaderfd(si.addr);
+		int shader_id = glCreateShader(si.flag);
+		GL_DUMP_ERROR("glCreateShader : ");
+        int compilation_return;
+        
+        if (shaderfd)
+        {
+            while (getline(shaderfd, line))
+                source_code += line + "\n";
+            shaderfd.close();
+        }
+        else
+            std::cout << "shader introuvable : " << si.addr << std::endl;
+        const char *source_char = source_code.c_str();
+		glShaderSource(shader_id, 1, &source_char, NULL);
+		GL_DUMP_ERROR("glShaderSource : ");
+		glCompileShader(shader_id);
+		GL_DUMP_ERROR("glCompileShader : ");
+		glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compilation_return);
+		GL_DUMP_ERROR("glGetShaderiv : ");
+        if (compilation_return == 0)
+        {
+            GLchar buf[10000];
+	        glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &compilation_return);
+	        glGetShaderInfoLog(shader_id, 10000, &compilation_return, buf);
+	        std::cout << buf << std::endl;
+        }
+		glAttachShader(ret, shader_id);
+		GL_DUMP_ERROR("glAttachShader");
+    }
+	glLinkProgram(ret);
+	GL_DUMP_ERROR("glLinkProgram : ");
+    this->glIntroProgramId = ret;
+}
+
+int	RenderManager::getImage(std::string name)
+{
+	FILE *file = fopen(name.c_str(), "rb");
+	if (file == NULL){
+		printf ("Error: File does not exist");
+		return (-1);
+	}
+	
+	unsigned int    data_pos;
+	unsigned int    width, height;
+	unsigned int    image_size;
+	unsigned int    image_id;
+	unsigned char	header[138];
+	char            *data;
+	
+	fread(header, 1, 138, file);
+	data_pos = *(int*)&(header[0x0A]);
+	width = *(int*)&(header[0x12]);
+	height = *(int*)&(header[0x16]);
+	image_size = width * height * 3;
+	rewind(file);
+	fread(header, 1, data_pos, file);
+	data = (char*)malloc(image_size * sizeof(char));
+	glGenTextures(1, &(image_id));
+	fread(data, 1, image_size, file);
+	fclose(file);
+	glBindTexture(GL_TEXTURE_2D, image_id);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,0, GL_BGR, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	free(data);
+	return (image_id);
+}
+
+void RenderManager::drawIntro(){
+
 }

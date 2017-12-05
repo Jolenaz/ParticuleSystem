@@ -4,7 +4,8 @@
 typedef enum e_state{
         fly,
         mouseClick,
-        mouseTrack
+        mouseTrack,
+        intro
 }t_state;
 
 class SceneManager{
