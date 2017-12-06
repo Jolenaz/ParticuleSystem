@@ -26,6 +26,7 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->getGlProgram();
 	this->initParticule();
 	this->glIntroImageId = this->getImage("Intro.bmp");
+	this->introVao = this->getIntroVao();
 }
 
 RenderManager::~RenderManager(void){
@@ -203,6 +204,28 @@ void RenderManager::draw(){
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
 	glDrawArrays(GL_POINTS,0,this->fullSize);
+	GL_DUMP_ERROR("glDrawArrays : ");
+	glDisableVertexAttribArray(0);
+	SDL_GL_SwapWindow(this->window);
+}
+
+void RenderManager::drawIntro(){
+
+	glUseProgram(this->glIntroProgramId);
+	GL_DUMP_ERROR("glUseProgram : ");
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL_DUMP_ERROR("glClear : ");
+	glBindBuffer(GL_ARRAY_BUFFER, this->introVbo);
+	GL_DUMP_ERROR("glBindBuffer : ");
+	
+	glBindTexture(GL_TEXTURE_2D, this->glIntroImageId);
+	GL_DUMP_ERROR("glBindTexture : ");
+	
+	glBindVertexArray(this->introVao);
+	GL_DUMP_ERROR("glBindVertexArray int draw : ");
+	glEnableVertexAttribArray(0);
+	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
 	GL_DUMP_ERROR("glDrawArrays : ");
 	glDisableVertexAttribArray(0);
 	SDL_GL_SwapWindow(this->window);
@@ -433,6 +456,19 @@ int	RenderManager::getImage(std::string name)
 	return (image_id);
 }
 
-void RenderManager::drawIntro(){
+GLuint RenderManager::getIntroVao(){
+	GLuint vao;
+	
+	Vec2 points[4] = {{-1.0f,1.0f}, {1.0f,1.0f}, {-1.0,-1.0}, {1.0,-1.0,}};
 
+	glGenBuffers(1, &this->introVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, this->introVbo);
+	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vec2), &points[0], GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), (GLvoid*)(0));
+
+	return vao;
 }
+

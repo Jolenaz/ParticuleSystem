@@ -54,6 +54,7 @@ public:
     void            getGlProgram();
     void            getGlIntroProgram();
     int             getImage(std::string);
+    GLuint          getIntroVao();
 
     void            initParticule();
     void            update();
@@ -62,6 +63,8 @@ public:
     SDL_Window      *window;
     GLuint          vbo_gl_pos;
     GLuint          vao;
+    GLuint          introVao;
+    GLuint          introVbo;
     cl_mem          vbo_cl_pos;
     cl_mem          vbo_cl_speed;
     cl_command_queue cmd_queue;
