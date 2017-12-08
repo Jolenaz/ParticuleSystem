@@ -2,6 +2,13 @@
 #include "RenderManager.class.hpp"
 #pragma OPENCL EXTENSION cl_apple_gl_sharing : enable
 
+typedef struct s_screenPoint{
+
+	Vec2 pos;
+	Vec2 tex;
+
+} t_screenPoint;
+
 void GL_DUMP_ERROR(std::string message){
     int glErrorCode = 0;
     if ((glErrorCode = glGetError()) != GL_NO_ERROR)
@@ -24,6 +31,7 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->_initGLCL();
 	this->getClProgram();
 	this->getGlProgram();
+	this->getGlIntroProgram();
 	this->initParticule();
 	this->glIntroImageId = this->getImage("Intro.bmp");
 	this->introVao = this->getIntroVao();
@@ -187,13 +195,13 @@ void RenderManager::draw(){
 	GL_DUMP_ERROR("glUseProgram : ");
 	Mat4 VP =  this->cam.get_projMat() * this->cam.transform.get_localToWorld();
 	glUniformMatrix4fv(glGetUniformLocation(this->glProgramId, "VP"), 1, GL_TRUE, (const GLfloat*)&VP.value);
-
-
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
+
 	glUniform4f(glGetUniformLocation(this->glProgramId, "center"), this->center[0],this->center[1],this->center[2],1.0f);
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
 	glUniform4f(glGetUniformLocation(this->glProgramId, "inColor"), tColor.x,tColor.y,tColor.z,1.0f);
 	GL_DUMP_ERROR("glUniformMatrix4fv : ");
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_DUMP_ERROR("glClear : ");
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_gl_pos);
@@ -210,24 +218,42 @@ void RenderManager::draw(){
 }
 
 void RenderManager::drawIntro(){
-
+	
+	float pointTest[3][3] = {{0.0f,0.0f,0.1f}, {0.5f,0.5f,0.1f},{-0.5f,-0.5f,0.1f}};
+	GLuint vboTest;
+	GLuint vaoTest;
+	
+	glGenBuffers(1, &vboTest);
+	glBindBuffer(GL_ARRAY_BUFFER, vboTest);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, &pointTest, GL_STATIC_DRAW);
+	
+	glGenVertexArrays(1, &vaoTest);
+	GL_DUMP_ERROR("glGenVertexArrays int drawIntro : ");
+	glBindVertexArray(vaoTest);
+	GL_DUMP_ERROR("glBindVertexArray int drawIntro : ");
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (GLvoid*)(0));
+	GL_DUMP_ERROR("glVertexAttribPointer int drawIntro : ");
+	
 	glUseProgram(this->glIntroProgramId);
-	GL_DUMP_ERROR("glUseProgram : ");
+	GL_DUMP_ERROR("glUseProgram int drawIntro : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	GL_DUMP_ERROR("glClear : ");
-	glBindBuffer(GL_ARRAY_BUFFER, this->introVbo);
-	GL_DUMP_ERROR("glBindBuffer : ");
+	GL_DUMP_ERROR("glClear int drawIntro : ");
 	
-	glBindTexture(GL_TEXTURE_2D, this->glIntroImageId);
-	GL_DUMP_ERROR("glBindTexture : ");
+	// glBindTexture(GL_TEXTURE_2D, this->glIntroImageId);
+	// GL_DUMP_ERROR("glBindTexture : ");
 	
-	glBindVertexArray(this->introVao);
-	GL_DUMP_ERROR("glBindVertexArray int draw : ");
+	// glBindVertexArray(vaoTest);
+	// GL_DUMP_ERROR("glBindVertexArray int drawIntro : ");
 	glEnableVertexAttribArray(0);
-	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
-	GL_DUMP_ERROR("glDrawArrays : ");
+	GL_DUMP_ERROR("glEnableVertexAttribArray in drawIntro : ");
+	// glEnableVertexAttribArray(1);
+	// GL_DUMP_ERROR("glEnableVertexAttribArray : ");
+	glDrawArrays(GL_POINTS,0,3);
+	GL_DUMP_ERROR("glDrawArrays in drawIntro: ");
 	glDisableVertexAttribArray(0);
+	GL_DUMP_ERROR("glDisableVertexAttribArray in drawIntro: ");
+	// glDisableVertexAttribArray(1);
+	// GL_DUMP_ERROR("glDisableVertexAttribArray : ");
 	SDL_GL_SwapWindow(this->window);
 }
 
@@ -456,19 +482,26 @@ int	RenderManager::getImage(std::string name)
 	return (image_id);
 }
 
+
 GLuint RenderManager::getIntroVao(){
 	GLuint vao;
 	
-	Vec2 points[4] = {{-1.0f,1.0f}, {1.0f,1.0f}, {-1.0,-1.0}, {1.0,-1.0,}};
+	t_screenPoint points[4] = {
+		{{-1.0f,1.0f}, {0.0f, 0.0f} }, 
+		{{-1.0f,-1.0f}, {0.0f , 1.0f }} ,
+		{{1.0,1.0}, {1.0f , 0.0f}} ,
+		{{1.0,-1.0,}, { 1.0f,1.0f }}
+	};
 
 	glGenBuffers(1, &this->introVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->introVbo);
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vec2), &points[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(t_screenPoint), &points[0], GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), (GLvoid*)(0));
-
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(t_screenPoint), (GLvoid*)(0));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(t_screenPoint), (GLvoid*)(sizeof(Vec2)));
+	
 	return vao;
 }
 

@@ -51,6 +51,7 @@ int main(int ac, char **av)
 
 
 
+        int lala = 1;
         while(sManager.main_loop())
         {
                 tmp = SDL_GetTicks() - old_time;
@@ -64,6 +65,11 @@ int main(int ac, char **av)
                         if (sManager.state != fly)
                                 rManager.update();
                 }else{
+                        if (lala)
+                        {
+                                std::cout << "here" << std::endl;
+                                lala =0;
+                        }
                         rManager.drawIntro();
                 }
                 i = i < 29 ? i + 1 : 0;
