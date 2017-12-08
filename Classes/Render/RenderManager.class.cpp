@@ -218,42 +218,26 @@ void RenderManager::draw(){
 }
 
 void RenderManager::drawIntro(){
-	
-	float pointTest[3][3] = {{0.0f,0.0f,0.1f}, {0.5f,0.5f,0.1f},{-0.5f,-0.5f,0.1f}};
-	GLuint vboTest;
-	GLuint vaoTest;
-	
-	glGenBuffers(1, &vboTest);
-	glBindBuffer(GL_ARRAY_BUFFER, vboTest);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, &pointTest, GL_STATIC_DRAW);
-	
-	glGenVertexArrays(1, &vaoTest);
-	GL_DUMP_ERROR("glGenVertexArrays int drawIntro : ");
-	glBindVertexArray(vaoTest);
-	GL_DUMP_ERROR("glBindVertexArray int drawIntro : ");
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (GLvoid*)(0));
-	GL_DUMP_ERROR("glVertexAttribPointer int drawIntro : ");
-	
 	glUseProgram(this->glIntroProgramId);
 	GL_DUMP_ERROR("glUseProgram int drawIntro : ");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_DUMP_ERROR("glClear int drawIntro : ");
 	
-	// glBindTexture(GL_TEXTURE_2D, this->glIntroImageId);
-	// GL_DUMP_ERROR("glBindTexture : ");
+	glBindTexture(GL_TEXTURE_2D, this->glIntroImageId);
+	GL_DUMP_ERROR("glBindTexture : ");
 	
-	// glBindVertexArray(vaoTest);
-	// GL_DUMP_ERROR("glBindVertexArray int drawIntro : ");
+	glBindVertexArray(this->introVao);
+	GL_DUMP_ERROR("glBindVertexArray int drawIntro : ");
 	glEnableVertexAttribArray(0);
 	GL_DUMP_ERROR("glEnableVertexAttribArray in drawIntro : ");
-	// glEnableVertexAttribArray(1);
-	// GL_DUMP_ERROR("glEnableVertexAttribArray : ");
-	glDrawArrays(GL_POINTS,0,3);
+	glEnableVertexAttribArray(1);
+	GL_DUMP_ERROR("glEnableVertexAttribArray : ");
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
 	GL_DUMP_ERROR("glDrawArrays in drawIntro: ");
 	glDisableVertexAttribArray(0);
 	GL_DUMP_ERROR("glDisableVertexAttribArray in drawIntro: ");
-	// glDisableVertexAttribArray(1);
-	// GL_DUMP_ERROR("glDisableVertexAttribArray : ");
+	glDisableVertexAttribArray(1);
+	GL_DUMP_ERROR("glDisableVertexAttribArray : ");
 	SDL_GL_SwapWindow(this->window);
 }
 
@@ -467,7 +451,7 @@ int	RenderManager::getImage(std::string name)
 	data_pos = *(int*)&(header[0x0A]);
 	width = *(int*)&(header[0x12]);
 	height = *(int*)&(header[0x16]);
-	image_size = width * height * 3;
+	image_size = width * height * 4;
 	rewind(file);
 	fread(header, 1, data_pos, file);
 	data = (char*)malloc(image_size * sizeof(char));
@@ -475,7 +459,7 @@ int	RenderManager::getImage(std::string name)
 	fread(data, 1, image_size, file);
 	fclose(file);
 	glBindTexture(GL_TEXTURE_2D, image_id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,0, GL_BGR, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	free(data);
@@ -487,10 +471,10 @@ GLuint RenderManager::getIntroVao(){
 	GLuint vao;
 	
 	t_screenPoint points[4] = {
-		{{-1.0f,1.0f}, {0.0f, 0.0f} }, 
-		{{-1.0f,-1.0f}, {0.0f , 1.0f }} ,
-		{{1.0,1.0}, {1.0f , 0.0f}} ,
-		{{1.0,-1.0,}, { 1.0f,1.0f }}
+		{{-1.0f,1.0f}, {0.0f, 1.0f} }, 
+		{{-1.0f,-1.0f}, {0.0f , 0.0f }} ,
+		{{1.0,1.0}, {1.0f , 1.0f}} ,
+		{{1.0,-1.0,}, { 1.0f,0.0f }}
 	};
 
 	glGenBuffers(1, &this->introVbo);
