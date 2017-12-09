@@ -6,25 +6,35 @@ int SceneManager::main_loop(){
     SDL_PumpEvents();
 
     if (SDL_PollEvent(&ev)){
-        if ( ( ev.type == SDL_KEYDOWN && (ev.key.keysym.sym == SDLK_c || ev.key.keysym.sym == SDLK_ESCAPE)))
+        if ( ( ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_ESCAPE))
                 return (0);
         if (ev.key.keysym.sym == SDLK_SPACE && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
                 SDL_SetRelativeMouseMode(SDL_TRUE);
                 this->state = fly;
         }
-        if (ev.key.keysym.sym == SDLK_KP_1 && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+        if (ev.type == SDL_KEYDOWN && ev.key.repeat == 0 && (ev.key.keysym.sym == SDLK_KP_1 || ev.key.keysym.sym == SDLK_1)){
                 SDL_SetRelativeMouseMode(SDL_TRUE);
                 this->state = fly;
         }
-        if (ev.key.keysym.sym == SDLK_KP_2 && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+        if (ev.type == SDL_KEYDOWN && ev.key.repeat == 0 && (ev.key.keysym.sym == SDLK_KP_2 || ev.key.keysym.sym == SDLK_2)){
                 SDL_SetRelativeMouseMode(SDL_FALSE);
                 SDL_ShowCursor(SDL_ENABLE);
                 this->state = mouseClick;
         }
-        if (ev.key.keysym.sym == SDLK_KP_3 && ev.type == SDL_KEYDOWN && ev.key.repeat == 0){
+        if (ev.type == SDL_KEYDOWN && ev.key.repeat == 0 && (ev.key.keysym.sym == SDLK_KP_3 || ev.key.keysym.sym == SDLK_3)){
                 SDL_SetRelativeMouseMode(SDL_FALSE);
                 SDL_ShowCursor(SDL_ENABLE);
                 this->state = mouseTrack;
+        }
+        if (ev.type == SDL_KEYDOWN && ev.key.repeat == 0 && ev.key.keysym.sym == SDLK_c){
+                SDL_SetRelativeMouseMode(SDL_TRUE);
+                this->state = fly;
+                rManager.initParticule(1);
+        }
+        if (ev.type == SDL_KEYDOWN && ev.key.repeat == 0 && ev.key.keysym.sym == SDLK_v){
+                SDL_SetRelativeMouseMode(SDL_TRUE);
+                this->state = fly;
+                rManager.initParticule(0);
         }
         switch (this->state){
                 case mouseClick:

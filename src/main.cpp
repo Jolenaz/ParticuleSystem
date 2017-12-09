@@ -65,11 +65,6 @@ int main(int ac, char **av)
                         if (sManager.state != fly)
                                 rManager.update();
                 }else{
-                        if (lala)
-                        {
-                                std::cout << "here" << std::endl;
-                                lala =0;
-                        }
                         rManager.drawIntro();
                 }
                 i = i < 29 ? i + 1 : 0;

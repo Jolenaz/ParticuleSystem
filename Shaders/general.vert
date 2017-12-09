@@ -8,7 +8,7 @@ uniform vec4 inColor;
 void main(){
 	float dist = distance(vertexPosition_modelspace, center) / 20.0f;
 	dist = dist > 1.0f ? 1.0f : dist;
-	vec4 minColor = inColor * 0.5f;
-	color = minColor + dist * (inColor - minColor);
+	vec4 minColor = inColor * 0.01f;
+	color = minColor + dist * (inColor + minColor);
 	gl_Position = VP * vertexPosition_modelspace;
 }

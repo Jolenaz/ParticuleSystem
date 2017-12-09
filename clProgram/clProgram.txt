@@ -3,7 +3,7 @@ typedef struct s_vertex{
     float4 speed;
 }   vertex;
 
-__kernel void initPoints(__global float4* pos,__global float4* speed, uint caracSize) 
+__kernel void initPoints(__global float4* pos,__global float4* speed, uint caracSize, uint cube) 
 {
     float4 ret = 1.0f;
     uint index = get_global_id(0);
@@ -12,8 +12,21 @@ __kernel void initPoints(__global float4* pos,__global float4* speed, uint carac
     ret.s0 = (float)((index % tmp) / caracSize) / caracSize * 10.0f - 5.0f;
     ret.s1 = (float)((index % tmp) % caracSize) / caracSize * 10.0f - 5.0f;
     ret.s2 = (float)(index / tmp) / caracSize * 10.0f - 5.0f;
+
+    if (cube == 0)
+    {
+        float3 dist = (float3)(ret.s0,ret.s1,ret.s2);
+        if (length(dist) <= 5.0f )
+        {
+            ret.s0 += ret.s0;
+            ret.s1 += ret.s1;
+            ret.s2 += ret.s2;
+        }
+    }
+
     pos[index] = ret;
     speed[index] = 0.0f;
+
     //uint tmp = caracSize * caracSize;
     //ret.s0 = 30.0f;
     //ret.s1 = 20.0f;

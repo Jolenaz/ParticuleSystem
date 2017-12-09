@@ -56,7 +56,7 @@ public:
     int             getImage(std::string);
     GLuint          getIntroVao();
 
-    void            initParticule();
+    void            initParticule(uint);
     void            update();
     void            draw();
     void            drawIntro();

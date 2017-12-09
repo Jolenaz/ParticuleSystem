@@ -32,7 +32,7 @@ RenderManager::RenderManager(float w, float h, uint caracSize){
 	this->getClProgram();
 	this->getGlProgram();
 	this->getGlIntroProgram();
-	this->initParticule();
+	this->initParticule(1);
 	this->glIntroImageId = this->getImage("Intro.bmp");
 	this->introVao = this->getIntroVao();
 }
@@ -185,9 +185,9 @@ void RenderManager::draw(){
 
 	if (this->timeru >= 6.0f)
 	{
-		//this->timeru = 0.0f;
-		//curColorIndex += 1;
-		//curColorIndex %= 5;
+		this->timeru = 0.0f;
+		curColorIndex += 1;
+		curColorIndex %= 5;
 	}
 	
 
@@ -311,7 +311,7 @@ void RenderManager::_initGLCL(){
 
 }
 
-void RenderManager::initParticule(){
+void RenderManager::initParticule(uint cube){
 
 	cl_int err_code;
 
@@ -326,6 +326,9 @@ void RenderManager::initParticule(){
 	err_code = clSetKernelArg(this->initKernel, 1, sizeof(cl_mem), (void *)&this->vbo_cl_speed);
 	if (err_code != 0){std::cout << "set kernel arg0 init " << err_code << std::endl;}
 	err_code = clSetKernelArg(this->initKernel, 2, sizeof(uint), (void *)&this->caracSize);
+	if (err_code != 0){std::cout << "set kernel arg1 init " << err_code << std::endl;}
+
+	err_code = clSetKernelArg(this->initKernel, 3, sizeof(uint), (void *)&cube);
 	if (err_code != 0){std::cout << "set kernel arg1 init " << err_code << std::endl;}
 
 	const size_t global_item_size = this->fullSize;
